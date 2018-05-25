@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import GameLogic from '../Logic/GameLogic';
 import PlayerComponent from './PlayerComponent';
 

@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import CardComponent from './CardComponent';
 
 class PlayerComponent extends Component {
     constructor(props) {
         super(props);
-
     }
 
     render() {
