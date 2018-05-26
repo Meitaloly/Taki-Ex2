@@ -8,12 +8,12 @@ class CardComponent extends Component {
 
 
     render() {
-        const { card, checkCard, playerIndex } = this.props;
+        const { card, checkCard, playerIndex ,isOpenCard } = this.props;
 
         return (
             <div>
-                <img src={card.imgSourceFront} onClick={() => checkCard(card, playerIndex)} />
-                {/* {isValid ? <img src={card.imgSourceFront} /> : <div>} */}
+                {/* <img src={card.imgSourceFront} onClick={() => checkCard(card, playerIndex)} /> */}
+                {isOpenCard ? <img src={card.imgSourceFront} onClick={() => checkCard(card, playerIndex)} /> : <img src={card.imgSourceBack} />}
             </div>
         );
     }
