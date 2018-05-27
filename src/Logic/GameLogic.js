@@ -193,7 +193,7 @@ class GameLogic {
                 // //if (!openTaki) {
                 //     createTakiButton();
                 //     openTaki = true;
-                // //}
+                // //}//
             }
         }
         else if (card.value === "plus") {
