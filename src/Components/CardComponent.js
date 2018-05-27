@@ -8,12 +8,14 @@ class CardComponent extends Component {
 
 
     render() {
-        const { card, checkCard, playerIndex ,isOpenCard } = this.props;
+        const { card, checkCard, playerIndex, isOpenCard, isInDeck, checkStatusOnTableDeckClicked } = this.props;
 
         return (
             <div>
                 {/* <img src={card.imgSourceFront} onClick={() => checkCard(card, playerIndex)} /> */}
-                {isOpenCard ? <img src={card.imgSourceFront} onClick={() => checkCard(card, playerIndex)} /> : <img src={card.imgSourceBack} />}
+                {isOpenCard ? <img src={card.imgSourceFront} onClick={isInDeck ? null : () => checkCard(card, playerIndex)} />
+                    : <img src={card.imgSourceBack} onClick={isInDeck ? () => checkStatusOnTableDeckClicked() : null} />}
+
             </div>
         );
     }

@@ -3,6 +3,7 @@ import GameLogic from '../Logic/GameLogic';
 import PlayerComponent from './PlayerComponent';
 import TableDeck from './TableDeck';
 
+
 const numberOfPlayer = 2;
 
 const initialState = {
@@ -11,7 +12,8 @@ const initialState = {
     takenCardsCounter: 0,
     cardOnTop: null,
     turnIndex: numberOfPlayer,
-    numOfTurns: 0
+    numOfTurns: 0,
+    gameMove: []
 }
 
 class GameBoard extends Component {
@@ -20,43 +22,63 @@ class GameBoard extends Component {
         this.state = initialState;
         this.checkCard = this.checkCard.bind(this);
         this.setNewStateCb = this.setNewStateCb.bind(this);
+        this.checkStatusOnTableDeckClicked = this.checkStatusOnTableDeckClicked.bind(this);
+        GameLogic.setCbFucntions(this.setNewStateCb, this.addTakenCardCounter);
     }
 
-    componentWillMount() {
-        let { takenCardsCounter, turnIndex } = this.state;
-        GameLogic.setCbFucntions(this.setNewStateCb);
+    componentDidMount() {
         const deck = GameLogic.createDeck();
-        const players = GameLogic.shareCardsToPlayers(numberOfPlayer, deck, takenCardsCounter);
-        const cardOnTop = GameLogic.drawOpeningCard(deck, takenCardsCounter);
+        const players = GameLogic.shareCardsToPlayers(numberOfPlayer, deck);
+        const cardOnTop = GameLogic.drawOpeningCard(deck);
 
-        console.log(takenCardsCounter);
         this.setState({
             deck,
             players,
-            //takenCardsCounter,
-            cardOnTop,
-            turnIndex,
+            cardOnTop
+        }, () => {
+            this.saveGameMove();
         })
     }
 
-    setNewStateCb(key,value){
+    saveGameMove() {
+        const currentState = this.state;
+        delete currentState.gameMove;
+        let gameMove = [];
+        gameMove.push(currentState);
+
         this.setState({
-            key:value
+            gameMove
+        })
+    }
+
+    setNewStateCb(key, value) {
+        this.setState({
+            [key]: value
         });
     }
 
     checkCard(card, playerIndex) {
+        console.log(this.state.turnIndex);
         const { players, deck } = this.state;
-        let { cardOnTop, turnIndex, numOfTurns } = this.state;
-        GameLogic.checkCard(players[playerIndex - 1], card, cardOnTop, numberOfPlayer, turnIndex, deck, numOfTurns);
-
+        let { cardOnTop, numOfTurns } = this.state;
+        GameLogic.checkCard(players[playerIndex - 1], card, cardOnTop, numberOfPlayer, deck, numOfTurns);
+        
         console.log(cardOnTop);
         this.setState({
             deck,
             players,
             cardOnTop,
-            turnIndex,
             numOfTurns
+        })
+    }
+
+    checkStatusOnTableDeckClicked(){
+        const { players, deck, cardOnTop } = this.state;
+        GameLogic.checkStatusOnTableDeckClicked(players[numberOfPlayer - 1],deck, cardOnTop);
+        this.setState({
+            deck,
+        }, () => {
+            this.saveGameMove();
         })
     }
 
@@ -64,12 +86,12 @@ class GameBoard extends Component {
         const { players, cardOnTop } = this.state;
 
         return (
-            <div>
+            players.length > 0 && (<div>
                 {players.map(player => (
                     <PlayerComponent key={player.index} checkCard={this.checkCard} player={player} numberOfPlayer={numberOfPlayer} />
                 ))}
-                <TableDeck cardOnTop={cardOnTop} />
-            </div>
+                <TableDeck cardOnTop={cardOnTop} checkStatusOnTableDeckClicked = {this.checkStatusOnTableDeckClicked}/>
+            </div>)
         );
     }
 }

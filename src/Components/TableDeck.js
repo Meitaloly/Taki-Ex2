@@ -8,14 +8,14 @@ class TableDeck extends Component {
     }
 
     render() {
-        const { cardOnTop } = this.props;
+        const { cardOnTop, checkStatusOnTableDeckClicked } = this.props;
 
         return (
             <div>
                 <div> deck: </div>
                 
-                <CardComponent card={cardOnTop} isOpenCard = {false} />
-                <CardComponent card={cardOnTop}  isOpenCard = {true} />
+                <CardComponent card={cardOnTop} isOpenCard = {false} isInDeck = {true} checkStatusOnTableDeckClicked ={checkStatusOnTableDeckClicked} />
+                <CardComponent card={cardOnTop} isOpenCard = {true} isInDeck = {true} checkStatusOnTableDeckClicked = {checkStatusOnTableDeckClicked}/>
             </div>
         );
     }
