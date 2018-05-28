@@ -61,13 +61,14 @@ class GameBoard extends Component {
         console.log(this.state.turnIndex);
         const { players, deck } = this.state;
         let { cardOnTop, numOfTurns } = this.state;
-        GameLogic.checkCard(players[playerIndex - 1], card, numberOfPlayer, deck);
-        
-        console.log(cardOnTop);
+        //GameLogic.checkCard(players[playerIndex - 1], card, numberOfPlayer, deck);
+        GameLogic.checkCard(playerIndex,card,numberOfPlayer,deck);
+
         this.setState({
             deck,
             players,
-            numOfTurns
+            numOfTurns,
+            players
         })
     }
 
