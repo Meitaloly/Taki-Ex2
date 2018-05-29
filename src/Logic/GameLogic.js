@@ -10,6 +10,7 @@ let numOfTurns = 0;
 let cardOnTop = null;
 const players = [];
 let gameStarted = false;
+let plus2 = 0;
 
 class GameLogic {
 
@@ -123,10 +124,16 @@ class GameLogic {
         deck[cardIndex].taken = true;
         this.addTakenCardCounter();
         arrToAddTheCard.push(deck[cardIndex]);
-        setStateInBoardCB('players',players);
-        if(gameStarted)
-        {
-            this.changeTurn(1,2,deck);
+        setStateInBoardCB('players', players);
+        if (gameStarted) {
+            console.log("player 1: " + players[0].cards);
+            console.log("player 2: " + players[1].cards);
+            if (plus2 > 0) {
+                plus2--;
+            }
+            else {
+                this.changeTurn(1, 2, deck);
+            }
         }
     }
 
@@ -139,7 +146,7 @@ class GameLogic {
         if (playerIndex === turnIndex) {
             if (openTaki) {
                 if (this.checkValidCard(card, openTaki)) {
-                    this.removeAndSetTopCard(players[playerIndex-1], card, deck);
+                    this.removeAndSetTopCard(players[playerIndex - 1], card, deck);
                 }
                 else {
                     alert("Wrong!");
@@ -149,8 +156,8 @@ class GameLogic {
             else {
                 if (this.checkValidCard(card, openTaki)) {
                     let cardOnTopColor = cardOnTop.color;
-                    this.removeAndSetTopCard(players[playerIndex-1], card, deck);
-                    this.isSpecialCard(players[playerIndex-1], numOfPlayers, deck, cardOnTopColor);
+                    this.removeAndSetTopCard(players[playerIndex - 1], card, deck);
+                    this.isSpecialCard(players[playerIndex - 1], numOfPlayers, deck, cardOnTopColor);
                 }
                 else {
                     alert("Wrong!");
@@ -186,6 +193,16 @@ class GameLogic {
             player.oneCardLeftCounter++;
         }
         setStateInBoardCB('players', players);
+        this.printPlayersCards();
+    }
+
+    static printPlayersCards() {
+        for (let i = 0; i < 2; i++) {
+            console.log("cards of player " + (i + 1) + ":");
+            for (let key in players[i].cards) {
+                console.log(players[i].cards[key])
+            }
+        }
     }
 
     static removeCardFromPlayersArr(player, card, deck) {
@@ -202,7 +219,7 @@ class GameLogic {
         cardOnTop = cardToPutOnTop;
         setStateInBoardCB('cardOnTop', cardOnTop);
         //cardOnTop = Object.assign(cardOnTop, cardToPutOnTop);
-        console.log(cardOnTop);
+        console.log("card on top is : " + cardOnTop.value + " " + cardOnTop.color);
     }
 
     static isSpecialCard(player, numOfPlayers, deck, cardOnTopColor) {
@@ -239,22 +256,27 @@ class GameLogic {
             }
         }
         else if (cardOnTop.value === "plus") {
-            this.changeTurn(numOfPlayers, numOfPlayers,deck);
+            this.changeTurn(numOfPlayers, numOfPlayers, deck);
         }
         else {
             this.checkPlayerWin(player, 1, numOfPlayers, deck);
         }
     }
 
-    static putAllCardsWithSameColorOfTaki(player,numOfPlayers, deck) {
-        let SameColorCards = this.getCardsFromRivalArrbByColor(player.cards, cardOnTop.color);
-        if (SameColorCards.length > 0) {
+    static putAllCardsWithSameColorOfTaki(player, numOfPlayers, deck) {
+
+        if (!openTaki) {
             openTaki = true;
-            //let takiTime = setInterval(function () { newTimeOut(SameColorCards, takiTime) }, 1000);
+            this.rivalPlay(deck, numOfPlayers);
         }
-        else {
-            this.checkPlayerWin(player, 1, numOfPlayers, deck);
-        }
+        // let SameColorCards = this.getCardsFromRivalArrbByColor(player.cards, cardOnTop.color);
+        // if (SameColorCards.length > 0) {
+        //     openTaki = true;
+        //     //let takiTime = setInterval(function () { newTimeOut(SameColorCards, takiTime) }, 1000);
+        // }
+        // else {
+        //     this.checkPlayerWin(player, 1, numOfPlayers, deck);
+        // }
     }
 
 
@@ -268,7 +290,7 @@ class GameLogic {
             //      rotateArrow();
         }
         else {
-            numOfTurns = + number;
+            numOfTurns += number;
             //turnTime.push(0);
         }
         console.log("before chnging turn: " + turnIndex);
@@ -292,7 +314,23 @@ class GameLogic {
             console.log("rivals turn");
             setTimeout(this.rivalPlay(deck, numOfPlayers), 2000);
         }
-        //   }
+        else {
+            if (plus2 > 0 && this.playerHasNo2PlusCards(players[1], numOfPlayers, deck)) {
+                let numOfCardsPlayerHasToTake = plus2;
+                for (let i = 0; i < numOfCardsPlayerHasToTake; i++) {
+                    this.addCardToPlayersArr(players[1].cards, deck);
+                }
+                this.changeTurn(1, numOfPlayers, deck);
+            }
+        }
+    }
+
+    static playerHasNo2PlusCards(player, numOfPlayers, deck) {
+        let res = true;
+        if (this.getCardsFromRivalArrbByValue(player.cards, "2plus").length > 0) {
+            res = false;
+        }
+        return res;
     }
 
     static checkPlayerWin(player, num, numOfPlayers, deck) {
@@ -322,6 +360,7 @@ class GameLogic {
         this.addTakenCardCounter();
         cardOnTop = deck[CardIndex];
         gameStarted = true;
+        this.printPlayersCards();
         //setStateInBoardCB('cardOnTop',cardOnTop);
         return deck[CardIndex];
     }
@@ -364,52 +403,91 @@ class GameLogic {
 
     static rivalPlay(deck, numOfPlayers) {
         if (!gameOver) {
-            let goodCardFound = false;
-            let changeColorCards = this.getCardsFromRivalArrbByValue(players[0].cards, "change_colorful");
-
-            if (changeColorCards.length > 0) //change color exists
-            {
-                this.playWithColorChangeCard(players[0], changeColorCards[0], deck);
-            }
-            else //change color doesn't exist
-            {
-                let stopCards = this.getCardsFromRivalArrbByValue(players[0].cards, "stop");
-                if (stopCards.length > 0) {
-                    goodCardFound = this.findSpcialCardWithSameColor(stopCards, numOfPlayers, deck, players[0]);
-                }
-                if (!goodCardFound) // stop with the same color wasn't found
+            if (openTaki) {
+                let sameColorCards = this.getCardsFromRivalArrbByColor(players[0].cards, cardOnTop.color);
+                if (sameColorCards.length > 0) //a number with the same color exists
                 {
-                    let takiCards = this.getCardsFromRivalArrbByValue(players[0].cards, "taki");
-
-                    if (takiCards.length > 0) {
-                        goodCardFound = this.findSpcialCardWithSameColor(takiCards, numOfPlayers, deck, players[0]);
+                    this.removeAndSetTopCard(players[0], sameColorCards[0], deck);
+                    this.checkPlayerWin(players[0], this.checkTopCard(), numOfPlayers, deck);
+                }
+                else {
+                    openTaki = false;
+                    this.changeTurn(this.checkTopCard(), numOfPlayers, deck);
+                }
+            }
+            else {
+                let goodCardFound = false;
+                let plus2Cards = this.getCardsFromRivalArrbByValue(players[0].cards, "2plus");
+                if (plus2Cards.length > 0) {  // 2plus card exist 
+                    if (plus2 > 0) { // there is an active 2plus card on deck
+                        plus2 += 2;
+                        this.removeAndSetTopCard(players[0], plus2Cards[0], deck);
+                        this.changeTurn(1, numOfPlayers, deck);
+                        goodCardFound = true;
                     }
-                    if (!goodCardFound) // taki with the same color wasn't found
-                    {
-                        var plusCards = this.getCardsFromRivalArrbByValue(players[0].cards, "plus");
-                        if (plusCards.length > 0) {
-                            goodCardFound = this.findSpcialCardWithSameColor(plusCards, numOfPlayers, deck, players[0]);
+                    else {
+                        goodCardFound = this.findSpcialCardWithSameColor(plus2Cards, numOfPlayers, deck, players[0]);
+                    }
+                }
+                if (!goodCardFound) {
+                    if (plus2 > 0) { //there is an active 2plus card and the rival has no 2plus cards
+                        let numOfCardsPlayerHasToTake = plus2;
+                        for (let i = 0; i < numOfCardsPlayerHasToTake; i++) {
+                            this.addCardToPlayersArr(players[0].cards, deck);
                         }
+                        this.changeTurn(1, numOfPlayers, deck);
+                    }
+                    else { // no 2plus cards on deck or in rivalArr
                         if (!goodCardFound) {
-                            let sameColorCards = this.getCardsFromRivalArrbByColor(players[0].cards, cardOnTop.color);
-                            if (sameColorCards.length > 0) //a number with the same color exists
+                            let changeColorCards = this.getCardsFromRivalArrbByValue(players[0].cards, "change_colorful");
+
+                            if (changeColorCards.length > 0) //change color exists
                             {
-                                this.removeAndSetTopCard(players[0], sameColorCards[0], deck);
-                                goodCardFound = true;
-                                this.checkPlayerWin(players[0], this.checkTopCard(), numOfPlayers, deck);
+                                this.playWithColorChangeCard(players[0], changeColorCards[0], deck);
                             }
-                            if (!goodCardFound) //a number with the same color doesn't exist
+                            else //change color doesn't exist
                             {
-                                let sameValuecards = this.getCardsFromRivalArrbByValue(players[0].cards, cardOnTop.value);
-                                if (sameValuecards.length > 0) //the same number exists
-                                {
-                                    this.removeAndSetTopCard(players[0], sameValuecards[0], deck);
-                                    this.isSpecialCard(players[0], sameValuecards[0], numOfPlayers, deck);
-                                    goodCardFound = true;
+                                let stopCards = this.getCardsFromRivalArrbByValue(players[0].cards, "stop");
+                                if (stopCards.length > 0) {
+                                    goodCardFound = this.findSpcialCardWithSameColor(stopCards, numOfPlayers, deck, players[0]);
                                 }
-                                else //the same number doesn't exist
+                                if (!goodCardFound) // stop with the same color wasn't found
                                 {
-                                    this.addCardToPlayersArr(players[0].cards, deck);
+                                    let takiCards = this.getCardsFromRivalArrbByValue(players[0].cards, "taki");
+
+                                    if (takiCards.length > 0) {
+                                        goodCardFound = this.findSpcialCardWithSameColor(takiCards, numOfPlayers, deck, players[0]);
+                                    }
+                                    if (!goodCardFound) // taki with the same color wasn't found
+                                    {
+                                        var plusCards = this.getCardsFromRivalArrbByValue(players[0].cards, "plus");
+                                        if (plusCards.length > 0) {
+                                            goodCardFound = this.findSpcialCardWithSameColor(plusCards, numOfPlayers, deck, players[0]);
+                                        }
+                                        if (!goodCardFound) {
+                                            let sameColorCards = this.getCardsFromRivalArrbByColor(players[0].cards, cardOnTop.color);
+                                            if (sameColorCards.length > 0) //a number with the same color exists
+                                            {
+                                                this.removeAndSetTopCard(players[0], sameColorCards[0], deck);
+                                                goodCardFound = true;
+                                                this.checkPlayerWin(players[0], this.checkTopCard(), numOfPlayers, deck);
+                                            }
+                                            if (!goodCardFound) //a number with the same color doesn't exist
+                                            {
+                                                let sameValuecards = this.getCardsFromRivalArrbByValue(players[0].cards, cardOnTop.value);
+                                                if (sameValuecards.length > 0) //the same number exists
+                                                {
+                                                    this.removeAndSetTopCard(players[0], sameValuecards[0], deck);
+                                                    this.isSpecialCard(players[0], sameValuecards[0], numOfPlayers, deck);
+                                                    goodCardFound = true;
+                                                }
+                                                else //the same number doesn't exist
+                                                {
+                                                    this.addCardToPlayersArr(players[0].cards, deck);
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -423,15 +501,15 @@ class GameLogic {
         let goodCardFound = false;
         for (let i = 0; i < cards.length; i++) {
             if (cards[i].color === cardOnTop.color) {
-                this.removeAndSetTopCard(player, cards[i],deck);
+                this.removeAndSetTopCard(player, cards[i], deck);
                 if (cards[i].value === "stop") {
-                    this.checkPlayerWin(player,2, numOfPlayers, deck);
+                    this.checkPlayerWin(player, 2, numOfPlayers, deck);
                 }
                 else if (cards[i].value === "plus") {
                     this.changeTurn(numOfPlayers, numOfPlayers, deck);
                 }
                 else if (cards[i].value === "taki") {
-                    this.putAllCardsWithSameColorOfTaki(player,numOfPlayers, deck);
+                    this.putAllCardsWithSameColorOfTaki(player, numOfPlayers, deck);
                 }
                 goodCardFound = true;
                 break;
@@ -464,6 +542,8 @@ class GameLogic {
         this.removeAndSetTopCard(player, card, deck); //send right parameters!
         let color = this.chooseColor(player);
         cardOnTop.color = color;
+        cardOnTop.imgSourceFront = "cards/" + "change_colorful_" + color + ".png";
+        this.checkPlayerWin(1);
         //setTimeout(function () { changeOpenDeckColor(color); }, 1000);
         //setTimeout(function () { this.checkPlayerWin(1); }, 1000);
     }
