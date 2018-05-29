@@ -13,7 +13,7 @@ class PlayerComponent extends Component {
             <div>
                 {player.name}
                 {player.cards.map(card => (
-                    <CardComponent key={card.cardId} checkCard={checkCard} playerIndex={player.index} card={card} isOpenCard = { player.showCards } isInDeck = {false} />
+                    <CardComponent className ="card" key={card.cardId} checkCard={checkCard} playerIndex={player.index} card={card} isOpenCard = { player.showCards } isInDeck = {false} />
                 ))}
             </div>
         );

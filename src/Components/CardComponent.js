@@ -11,7 +11,7 @@ class CardComponent extends Component {
         const { card, checkCard, playerIndex, isOpenCard, isInDeck, checkStatusOnTableDeckClicked } = this.props;
 
         return (
-            <div>
+            <div className = "card">
                 {/* <img src={card.imgSourceFront} onClick={() => checkCard(card, playerIndex)} /> */}
                 {isOpenCard ? <img src={card.imgSourceFront} onClick={isInDeck ? null : () => checkCard(card, playerIndex)} />
                     : <img src={card.imgSourceBack} onClick={isInDeck ? () => checkStatusOnTableDeckClicked() : null} />}
