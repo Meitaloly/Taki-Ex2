@@ -214,6 +214,13 @@ class GameLogic {
         }
     }
 
+    static setColorToTopCard(color, deck) {
+        let newCard = cardOnTop;
+        newCard.color = color;
+        newCard.imgSourceFront = "cards/" + "change_colorful_" + color + ".png";
+        this.setNewcardOnTop(newCard, deck);
+    }
+
     static setNewcardOnTop(cardToPutOnTop, deck) {
         deck[cardOnTop.cardId].played = true;
         cardOnTop = cardToPutOnTop;
@@ -223,10 +230,14 @@ class GameLogic {
     }
 
     static isSpecialCard(player, numOfPlayers, deck, cardOnTopColor) {
+        if(cardOnTop.value === "2plus")
+        {
+            plus2+=2;
+            this.checkPlayerWin(player, 1, numOfPlayers, deck);
+        }
         if (cardOnTop.value === "change_colorful" /*&& turnIndex === player.index*/) {
-            alert("change Color");
-            //showChooseAColorWindow();
-            this.changeTurn(this.checkTopCard(), numOfPlayers, deck);
+            setStateInBoardCB('modalIsOpen', true);
+            //this.changeTurn(this.checkTopCard(), numOfPlayers, deck);
         }
         else if (cardOnTop.value === "stop") {
             if (player.cards.length === 0) {
@@ -244,7 +255,7 @@ class GameLogic {
             }
             else {
                 if (!openTaki) {
-                    //createTakiButton();
+                    setStateInBoardCB('ImDoneIsHidden', false);
                     openTaki = true;
                 }
             }
@@ -369,7 +380,7 @@ class GameLogic {
         if (!gameOver) {
             let isPlayerTurn = this.checkPlayerTurn(player);
             if (isPlayerTurn) {
-                var hasCardsToUse = this.checkPlayerCards(player);
+                let hasCardsToUse = this.checkPlayerCards(player);
                 if (hasCardsToUse) {
                     alert("you have cards to use");
                     //wrongSound.play();
@@ -402,6 +413,7 @@ class GameLogic {
     }
 
     static rivalPlay(deck, numOfPlayers) {
+        let goodCardFound = false;
         if (!gameOver) {
             if (openTaki) {
                 let sameColorCards = this.getCardsFromRivalArrbByColor(players[0].cards, cardOnTop.color);
@@ -412,8 +424,8 @@ class GameLogic {
                         openTaki = false;
                         this.checkPlayerWin(players[0], this.checkTopCard(), numOfPlayers, deck);
                     }
-                    else{
-                        this.rivalPlay(deck,numOfPlayers);
+                    else {
+                        this.rivalPlay(deck, numOfPlayers);
                     }
                 }
                 else {
@@ -422,17 +434,21 @@ class GameLogic {
                 }
             }
             else {
-                let goodCardFound = false;
+                goodCardFound = false;
                 let plus2Cards = this.getCardsFromRivalArrbByValue(players[0].cards, "2plus");
                 if (plus2Cards.length > 0) {  // 2plus card exist 
                     if (plus2 > 0) { // there is an active 2plus card on deck
-                        plus2 += 2;
                         this.removeAndSetTopCard(players[0], plus2Cards[0], deck);
+                        plus2 += 2;
                         this.checkPlayerWin(players[0], 1, numOfPlayers, deck);
                         goodCardFound = true;
                     }
                     else {
                         goodCardFound = this.findSpcialCardWithSameColor(plus2Cards, numOfPlayers, deck, players[0]);
+                        if (goodCardFound) {
+                            plus2 += 2;
+                            this.checkPlayerWin(players[0], 1, numOfPlayers, deck);
+                        }
                     }
                 }
                 if (!goodCardFound) {
@@ -441,7 +457,7 @@ class GameLogic {
                         for (let i = 0; i < numOfCardsPlayerHasToTake; i++) {
                             this.addCardToPlayersArr(players[0].cards, deck);
                         }
-                        this.checkPlayerWin(players[0], 1, numOfPlayers, deck);
+                        //this.checkPlayerWin(players[0], 1, numOfPlayers, deck);
                     }
                     else { // no 2plus cards on deck or in rivalArr
                         if (!goodCardFound) {
@@ -449,7 +465,7 @@ class GameLogic {
 
                             if (changeColorCards.length > 0) //change color exists
                             {
-                                this.playWithColorChangeCard(players[0], changeColorCards[0], deck);
+                                this.playWithColorChangeCard(players[0], changeColorCards[0], deck, numOfPlayers);
                             }
                             else //change color doesn't exist
                             {
@@ -544,12 +560,12 @@ class GameLogic {
         return cards;
     }
 
-    static playWithColorChangeCard(player, card, deck) {
+    static playWithColorChangeCard(player, card, deck, numOfPlayers) {
         this.removeAndSetTopCard(player, card, deck); //send right parameters!
         let color = this.chooseColor(player);
         cardOnTop.color = color;
         cardOnTop.imgSourceFront = "cards/" + "change_colorful_" + color + ".png";
-        this.checkPlayerWin(1);
+        this.checkPlayerWin(player, 1, numOfPlayers, deck);
         //setTimeout(function () { changeOpenDeckColor(color); }, 1000);
         //setTimeout(function () { this.checkPlayerWin(1); }, 1000);
     }
@@ -597,6 +613,22 @@ class GameLogic {
         }
         res = indexOfMaxNum;
         return res;
+    }
+
+    static colorChangedInModal(color, deck, player, numOfPlayers) {
+        this.setColorToTopCard(color, deck);
+        setStateInBoardCB('modalIsOpen', false);
+        // this.setState({
+        //     modalIsOpen: false 
+        // });
+        this.checkPlayerWin(player, 1, numOfPlayers, deck);
+    }
+
+
+    static onImDoneButtonClicked(player, numOfPlayers, deck) {
+        openTaki = false;
+        setStateInBoardCB('ImDoneIsHidden', true);
+        this.checkPlayerWin(player, this.checkTopCard(), numOfPlayers, deck);
     }
 }
 export default GameLogic;

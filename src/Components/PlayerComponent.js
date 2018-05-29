@@ -7,13 +7,13 @@ class PlayerComponent extends Component {
     }
 
     render() {
-        const { player, checkCard, numberOfPlayer } = this.props;
+        const { player, checkCard,} = this.props;
 
         return (
             <div>
                 {player.name}
                 {player.cards.map(card => (
-                    <CardComponent className ="card" key={card.cardId} checkCard={checkCard} playerIndex={player.index} card={card} isOpenCard = { player.showCards } isInDeck = {false} />
+                    <CardComponent key={card.cardId} checkCard={checkCard} playerIndex={player.index} card={card} isOpenCard = { player.showCards } isInDeck = {false} />
                 ))}
             </div>
         );
