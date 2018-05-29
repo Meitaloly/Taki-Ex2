@@ -408,11 +408,17 @@ class GameLogic {
                 if (sameColorCards.length > 0) //a number with the same color exists
                 {
                     this.removeAndSetTopCard(players[0], sameColorCards[0], deck);
-                    this.checkPlayerWin(players[0], this.checkTopCard(), numOfPlayers, deck);
+                    if (sameColorCards.length === 0) {
+                        openTaki = false;
+                        this.checkPlayerWin(players[0], this.checkTopCard(), numOfPlayers, deck);
+                    }
+                    else{
+                        this.rivalPlay(deck,numOfPlayers);
+                    }
                 }
                 else {
                     openTaki = false;
-                    this.changeTurn(this.checkTopCard(), numOfPlayers, deck);
+                    this.checkPlayerWin(players[0], this.checkTopCard(), numOfPlayers, deck);
                 }
             }
             else {
@@ -422,7 +428,7 @@ class GameLogic {
                     if (plus2 > 0) { // there is an active 2plus card on deck
                         plus2 += 2;
                         this.removeAndSetTopCard(players[0], plus2Cards[0], deck);
-                        this.changeTurn(1, numOfPlayers, deck);
+                        this.checkPlayerWin(players[0], 1, numOfPlayers, deck);
                         goodCardFound = true;
                     }
                     else {
@@ -435,7 +441,7 @@ class GameLogic {
                         for (let i = 0; i < numOfCardsPlayerHasToTake; i++) {
                             this.addCardToPlayersArr(players[0].cards, deck);
                         }
-                        this.changeTurn(1, numOfPlayers, deck);
+                        this.checkPlayerWin(players[0], 1, numOfPlayers, deck);
                     }
                     else { // no 2plus cards on deck or in rivalArr
                         if (!goodCardFound) {
