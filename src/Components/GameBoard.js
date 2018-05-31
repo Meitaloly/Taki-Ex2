@@ -16,7 +16,7 @@ const initialState = {
     numOfTurns: 0,
     gameMove: [],
     modalIsOpen: false,
-    ImDoneIsHidden:true
+    ImDoneIsHidden: true
 }
 
 
@@ -40,7 +40,7 @@ class GameBoard extends Component {
 
     // colorChangedInModal(color) {
     //     const {deck} =this.state;
-        
+
     //     GameLogic.setColorToTopCard(color,deck);
     //     this.setState({
     //         modalIsOpen: false 
@@ -52,13 +52,15 @@ class GameBoard extends Component {
         const players = GameLogic.shareCardsToPlayers(numberOfPlayer, deck);
         const cardOnTop = GameLogic.drawOpeningCard(deck);
 
-        this.setState({
-            deck,
-            players,
-            cardOnTop
-        }, () => {
+        this.setState(() => {
+            return {
+                deck,
+                players,
+                cardOnTop
+            };
+        }), () => {
             this.saveGameMove();
-        })
+        };
     }
 
     saveGameMove() {
@@ -67,14 +69,18 @@ class GameBoard extends Component {
         let gameMove = [];
         gameMove.push(currentState);
 
-        this.setState({
-            gameMove
-        })
+        this.setState(() => {
+            return {
+                gameMove
+            };
+        });
     }
 
     setNewStateCb(key, value) {
-        this.setState({
-            [key]: value
+        this.setState(() => {
+            return {
+                [key]: value
+            };
         });
     }
 
@@ -85,22 +91,25 @@ class GameBoard extends Component {
         //GameLogic.checkCard(players[playerIndex - 1], card, numberOfPlayer, deck);
         GameLogic.checkCard(playerIndex, card, numberOfPlayer, deck);
 
-        this.setState({
-            deck,
-            players,
-            numOfTurns,
-        })
+        this.setState(() => {
+            return {
+                deck,
+                players,
+                numOfTurns,
+            };
+        });
     }
 
 
     checkStatusOnTableDeckClicked() {
         const { players, deck, cardOnTop } = this.state;
         GameLogic.checkStatusOnTableDeckClicked(players[numberOfPlayer - 1], deck, cardOnTop);
-        this.setState({
+        this.setState(()=>{return{
             deck,
+        };
         }, () => {
             this.saveGameMove();
-        })
+        });
     }
 
     render() {
@@ -113,12 +122,12 @@ class GameBoard extends Component {
                 ))}
                 <TableDeck cardOnTop={cardOnTop} checkStatusOnTableDeckClicked={this.checkStatusOnTableDeckClicked} />
 
-                <button className = "ImDoneButton" hidden = {this.state.ImDoneIsHidden} onClick={()=>GameLogic.onImDoneButtonClicked(players[numberOfPlayer-1],numberOfPlayer,deck)}>I'm done</button>
-                <Modal className = "colorWindow" isOpen={this.state.modalIsOpen}>
-                    <button className="blue" onClick={() => GameLogic.colorChangedInModal("blue",deck, players[numberOfPlayer-1],numberOfPlayer)}></button>
-                    <button className="red" onClick={() => GameLogic.colorChangedInModal("red",deck,players[numberOfPlayer-1],numberOfPlayer)}></button>
-                    <button className="yellow" onClick={() => GameLogic.colorChangedInModal("yellow",deck,players[numberOfPlayer-1],numberOfPlayer)}></button>
-                    <button className="green" onClick={() => GameLogic.colorChangedInModal("green",deck,players[numberOfPlayer-1],numberOfPlayer)}></button>
+                <button className="ImDoneButton" hidden={this.state.ImDoneIsHidden} onClick={() => GameLogic.onImDoneButtonClicked(players[numberOfPlayer - 1], numberOfPlayer, deck)}>I'm done</button>
+                <Modal className="colorWindow" isOpen={this.state.modalIsOpen}>
+                    <button className="blue" onClick={() => GameLogic.colorChangedInModal("blue", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
+                    <button className="red" onClick={() => GameLogic.colorChangedInModal("red", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
+                    <button className="yellow" onClick={() => GameLogic.colorChangedInModal("yellow", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
+                    <button className="green" onClick={() => GameLogic.colorChangedInModal("green", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
                 </Modal>
             </div>)
         );
