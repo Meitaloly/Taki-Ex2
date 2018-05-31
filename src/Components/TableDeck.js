@@ -11,7 +11,7 @@ class TableDeck extends Component {
         const { cardOnTop, checkStatusOnTableDeckClicked } = this.props;
 
         return (
-            <div>
+            <div className = "tableDeck">
                 <div> deck: </div>
                 
                 <CardComponent className = "card" card={cardOnTop} isOpenCard = {false} isInDeck = {true} checkStatusOnTableDeckClicked ={checkStatusOnTableDeckClicked} />

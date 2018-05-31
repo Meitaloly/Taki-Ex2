@@ -10,8 +10,8 @@ class PlayerComponent extends Component {
         const { player, checkCard,} = this.props;
 
         return (
-            <div>
-                {player.name}
+            <div className = {"player" + player.index} >
+                {/* {player.name} */}
                 {player.cards.map(card => (
                     <CardComponent key={card.cardId} checkCard={checkCard} playerIndex={player.index} card={card} isOpenCard = { player.showCards } isInDeck = {false} />
                 ))}
@@ -20,20 +20,3 @@ class PlayerComponent extends Component {
     }
 }
 export default PlayerComponent;
-// class Board extends React.Component {
-//     constructor() {
-//         this.state = {
-//             player1: [{}],
-//             player2: [{}]
-//         }
-//     }
-
-//     receiveCard = (card, player) => {
-//         let cards = this.state[player].push(card);
-//         this.setState({ [player]: cards });
-//     };
-
-//     render() {
-//         <PlayerCards cards={cards} />
-//     }
-// }

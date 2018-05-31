@@ -122,7 +122,7 @@ class GameBoard extends Component {
         let {numOfTurns, timer, avgTimeForTurn,avgTimeForTurnPerGame} = this.state;
 
         return (
-            players.length > 0 && (<div>
+            players.length > 0 && (<div className = "boardContainer">
                 {players.map(player => (
                     <PlayerComponent key={player.index} checkCard={this.checkCard} player={player} numberOfPlayer={numberOfPlayer} />
                 ))}

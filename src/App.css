@@ -72,3 +72,134 @@ body{
   background: lightskyblue;
 }
 
+/* ------------------------------------------------------------------------ */
+
+/* .boardContainer {
+  flex-direction: column;
+  justify-content: space-between;
+  display: flex;
+  margin: 0 auto;
+}
+
+.player1, .player2, .tableDeck{
+  text-align: center;
+}
+
+.player1, .player2{
+  margin: 0 auto;
+  position: relative;
+  display:inline-block;
+  margin-left: 70px;
+}
+
+.boardContainer>.player2,.player1 {
+  flex-direction: row;
+  justify-content: space-between;
+  text-align: center;
+  position: relative;
+}
+
+.player2>.card:hover{
+  transform: translateY(-50px);  
+}
+.red{
+  background-color: red;
+}
+.blue{
+  background-color: blue;
+}
+.yellow{
+  background-color: yellow;
+}
+.green{
+  background-color: green;
+}
+
+#colorWindow{
+  position: absolute;
+  width: 160px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+button.red, button.blue, button.green, button.yellow{
+  width: 60px;
+  height: 60px;
+}
+
+#takiButton{
+  width: 120px;
+  height: 50px;
+  background: lightskyblue;
+}
+
+.player0, .player1{
+  width: 50%;
+  float:left;
+}
+
+.statistics{
+  background: lightgray;
+  margin-top:20px;
+}
+
+#col1{
+  width:40%;
+}
+
+#timer{
+  display: none;
+}
+
+.container-quit-button{
+  display: flex;
+  justify-content: flex-end;
+}
+
+#quitButton {
+  height: 25px;
+  width: 80px;
+  background-color: white; 
+  color: red; 
+  border: 2px solid red;
+}
+
+#quitButton:hover {
+  background-color: red;
+  color: white;
+  border: 2px solid white;
+}
+
+.NewGameButton {
+  height: 50px;
+  width: 100px;
+  margin-top: 20px;
+  font-size: 16px;
+  background-color: white; 
+  color: rgb(45, 0, 128); 
+  border: 2px solid rgb(45, 0, 128);
+}
+
+.NewGameButton:hover {
+  background-color: rgb(45, 0, 128);
+  color: white;
+  border: 2px solid white;
+}
+
+.deckContainer{
+  align-items: center;
+  justify-content: space-around;
+  display: flex;
+}
+
+#deckStatus {
+  color: white;
+}
+
+.stats {
+  display: none;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center
+} */
