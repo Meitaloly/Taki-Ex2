@@ -12,6 +12,16 @@ const players = [];
 let gameStarted = false;
 let plus2 = 0;
 
+//statistics
+let turnTime = [];
+var avgTurnTimePerGame = [];
+let fullTime = "";
+let startTime = "00:01";
+let endTime;
+let sec = 0;
+let min = 0;
+let stopTimer = false;
+
 class GameLogic {
 
     static setCbFucntions(setStateInBoard) {
@@ -86,8 +96,6 @@ class GameLogic {
     }
 
     static shareCardsToPlayers(numOfPlayers, deck) {
-        //const players = [];
-
         for (let playerIndex = 0; playerIndex < numOfPlayers; playerIndex++) {
             players.push({
                 index: playerIndex + 1,
@@ -122,24 +130,39 @@ class GameLogic {
             cardIndex = Math.floor(Math.random() * deck.length);
         } while (deck[cardIndex].taken === true);
         deck[cardIndex].taken = true;
-        this.addTakenCardCounter();
+        this.addTakenCardCounter(deck);
         arrToAddTheCard.push(deck[cardIndex]);
-        setStateInBoardCB('players', players);
+        if (turnIndex === players[0].index) {
+            setTimeout(() => setStateInBoardCB('players', players), 2000);
+        }
+        else {
+            setStateInBoardCB('players', players);
+        }
         if (gameStarted) {
             console.log("player 1: " + players[0].cards);
             console.log("player 2: " + players[1].cards);
             if (plus2 > 0) {
                 plus2--;
             }
-            else {
+            if (plus2 === 0) {
                 this.changeTurn(1, 2, deck);
             }
         }
     }
 
-    static addTakenCardCounter() {
+    static addTakenCardCounter(deck) {
         takenCardsCounter++;
         setStateInBoardCB('takenCardsCounter', takenCardsCounter);
+        if (takenCardsCounter === deck.length) {
+            //shuffleSound.play();
+            for (let i = 0; i < deck.length; i++) {
+                if (deck[i].played) {
+                    deck[i].played = false;
+                    deck[i].taken = false;
+                    takenCardsCounter--;
+                }
+            }
+        }
     }
 
     static checkCard(playerIndex, card, numOfPlayers, deck) {
@@ -224,7 +247,12 @@ class GameLogic {
     static setNewcardOnTop(cardToPutOnTop, deck) {
         deck[cardOnTop.cardId].played = true;
         cardOnTop = cardToPutOnTop;
-        setStateInBoardCB('cardOnTop', cardOnTop);
+        if (turnIndex === players[0].index) {
+            setTimeout(() => {setStateInBoardCB('cardOnTop', cardOnTop)}, 2000);
+        }
+        else {
+            setStateInBoardCB('cardOnTop', cardOnTop);
+        }
         //cardOnTop = Object.assign(cardOnTop, cardToPutOnTop);
         console.log("card on top is : " + cardOnTop.value + " " + cardOnTop.color);
     }
@@ -234,7 +262,7 @@ class GameLogic {
             plus2 += 2;
             this.checkPlayerWin(player, 1, numOfPlayers, deck);
         }
-        if (cardOnTop.value === "change_colorful" /*&& turnIndex === player.index*/) {
+        else if (cardOnTop.value === "change_colorful" /*&& turnIndex === player.index*/) {
             setStateInBoardCB('modalIsOpen', true);
             //this.changeTurn(this.checkTopCard(), numOfPlayers, deck);
         }
@@ -249,7 +277,7 @@ class GameLogic {
         }
         else if (cardOnTop.value === "taki" || cardOnTop.value === "taki_colorful") {
             if (turnIndex !== numOfPlayers) { // rival action
-                this.putAllCardsWithSameColorOfTaki(player);
+                this.rivalActionForTakiCard(player);
                 this.checkPlayerWin(player, this.checkTopCard(), numOfPlayers, deck);
             }
             else {
@@ -261,8 +289,9 @@ class GameLogic {
             if (cardOnTop.value === "taki_colorful") {
                 //change the color of the taki to the cardOnTop.color
                 cardOnTop.color = cardOnTopColor;
+                cardOnTop.value = "taki";
                 cardOnTop.imgSourceFront = this.getCardSource("taki", cardOnTopColor);
-                setTimeout(()=>{setStateInBoardCB('cardOntop', cardOnTop)}, 2000);
+                setTimeout(() => { setStateInBoardCB('cardOntop', cardOnTop) }, 2000);
             }
         }
         else if (cardOnTop.value === "plus") {
@@ -273,68 +302,123 @@ class GameLogic {
         }
     }
 
-    static putAllCardsWithSameColorOfTaki(player, numOfPlayers, deck) {
-
+    static rivalActionForTakiCard(player, numOfPlayers, deck) {
         if (!openTaki) {
             openTaki = true;
+            this.checkPlayerWin(player, numOfPlayers, numOfPlayers, deck);
+            //this.rivalPlay(deck, numOfPlayers);
+        }
+        else {
             this.rivalPlay(deck, numOfPlayers);
         }
-        // let SameColorCards = this.getCardsFromRivalArrbByColor(player.cards, cardOnTop.color);
-        // if (SameColorCards.length > 0) {
-        //     openTaki = true;
-        //     //let takiTime = setInterval(function () { newTimeOut(SameColorCards, takiTime) }, 1000);
-        // }
-        // else {
-        //     this.checkPlayerWin(player, 1, numOfPlayers, deck);
-        // }
     }
 
 
+    static gameTimer() {
+        let handler = function () {
+            if (!stopTimer) {
+                if (++sec === 60) {
+                    sec = 0;
+                    ++min;
+                }
+                fullTime = (min < 10 ? "0" + min : min) + ":" + (sec < 10 ? "0" + sec : sec);
+                setStateInBoardCB("timer", fullTime);
+            }
+            else {
+                clearInterval(timeInterval);
+            }
+        };
+
+        let timeInterval = setInterval(handler, 1000);
+        handler();
+    }
+
+    static findAvgOfTurnTime(arr, isAllGames) {
+        var sum = 0;
+        let avg;
+        if (arr.length !== 0) {
+            for (var i = 0; i < arr.length; i++) {
+                sum += arr[i];
+            }
+            var avgNum = Number(sum / arr.length);
+            avg = Number(avgNum.toFixed(2));
+        }
+        else {
+            avg = 0;
+        }
+        if (!isAllGames) {
+            avgTurnTimePerGame.push(avg);
+            setStateInBoardCB("avgTimeForTurnPerGame", avg);
+        }
+        setStateInBoardCB("avgTimeForTurn", avg);
+    }
 
     static changeTurn(number, numOfPlayers, deck) {
-        //endTime = timer.getTime();
-        //if (!openTaki) {
-        if (number !== 2) {
-            numOfTurns++;
-            //setTurnTime(endTime);
-            //      rotateArrow();
+        endTime = fullTime;
+        if (openTaki) {
+            this.rivalPlay(deck, numOfPlayers);
         }
         else {
-            numOfTurns += number;
-            //turnTime.push(0);
-        }
-        console.log("before chnging turn: " + turnIndex);
-        turnIndex = ((turnIndex - 1) + number) % numOfPlayers + 1;
-        setStateInBoardCB('turnIndex', turnIndex);
-        setStateInBoardCB('numOfTurns', numOfTurns);
-        console.log("after chnging turn: " + turnIndex);
-        //--------------------------------
-        // NO NEED - SO FAR! 
-        // -------------------------------
-        // if (number === numOfPlayers) {
-        //     numOfTurns++;
-        // }
-        // else {
-        //     numOfTurns = + number;
-        // }
-        // -------------------------------
-
-        //startTime = timer.getTime();
-        if (turnIndex !== numOfPlayers) {
-            console.log("rivals turn");
-            setTimeout(()=>{this.rivalPlay(deck, numOfPlayers)}, 2000);
-        }
-        else {
-            setTimeout(()=>{
-            if (plus2 > 0 && this.playerHasNo2PlusCards(players[1], numOfPlayers, deck)) {
-                let numOfCardsPlayerHasToTake = plus2;
-                for (let i = 0; i < numOfCardsPlayerHasToTake; i++) {
-                    this.addCardToPlayersArr(players[1].cards, deck);
+            if (turnIndex === players[1].index) {
+                this.setTurnTime(endTime);
+            }
+            if (number === numOfPlayers) {
+                if (cardOnTop.value === "stop") {
+                    numOfTurns += number;
                 }
-                this.changeTurn(1, numOfPlayers, deck);
-            }},2000);
+                else {
+                    numOfTurns++;
+                }
+            }
+            else {
+                //rotateArrow();
+                numOfTurns += number;
+
+            }
+            console.log("before chnging turn: " + turnIndex);
+            turnIndex = ((turnIndex - 1) + number) % numOfPlayers + 1;
+            setStateInBoardCB('turnIndex', turnIndex);
+            setStateInBoardCB('numOfTurns', numOfTurns);
+            console.log("after chnging turn: " + turnIndex);
+            startTime = fullTime;
+
+            if (turnIndex !== numOfPlayers) {
+                console.log("rivals turn");
+                this.rivalPlay(deck, numOfPlayers)
+                // setTimeout(() => { this.rivalPlay(deck, numOfPlayers) }, 2000);
+            }
+            else {
+                if (plus2 > 0 && this.playerHasNo2PlusCards(players[1], numOfPlayers, deck)) {
+                    let numOfCardsPlayerHasToTake = plus2;
+                    for (let i = 0; i < numOfCardsPlayerHasToTake; i++) {
+                        this.addCardToPlayersArr(players[1].cards, deck);
+                    }
+                    this.changeTurn(1, numOfPlayers, deck);
+                }
+            }
         }
     }
+
+
+    static setTurnTime(endTime) {
+        if (turnIndex === players[1].index) {
+            let start = startTime.split(":");
+            let startMin = Number(start[0]);
+            startMin = startMin * 60;
+            let startSec = Number(start[1]);
+            let fullStartTimeInSec = startMin + startSec;
+
+            let end = endTime.split(":");
+            let endMin = Number(end[0]);
+            endMin = endMin * 60;
+            let endSec = Number(end[1]);
+            let fullendTimeInSec = endMin + endSec;
+
+            turnTime.push(fullendTimeInSec - fullStartTimeInSec);
+            this.findAvgOfTurnTime(turnTime, false);
+        }
+    }
+
 
     static playerHasNo2PlusCards(player, numOfPlayers, deck) {
         let res = true;
@@ -346,7 +430,7 @@ class GameLogic {
 
     static checkPlayerWin(player, num, numOfPlayers, deck) {
         if (player.cards.length === 0) {
-            //setTimeout(stopTheGame, 1000);
+            setTimeout(this.stopTheGame, 1000);
             alert("you win");
         }
         else {
@@ -354,9 +438,15 @@ class GameLogic {
         }
     }
 
+    static stopTheGame() {
+        endTime = fullTime;
+        stopTimer = true;
+        gameOver = true;
+    }
+
     static checkTopCard() {
         var nextTurn = 1;
-        if (cardOnTop.value === "stop") {
+        if (cardOnTop.value === "stop" || cardOnTop.value === "plus") {
             nextTurn = 2;
         }
         return nextTurn;
@@ -368,7 +458,7 @@ class GameLogic {
             CardIndex = Math.floor(Math.random() * deck.length);
         } while (deck[CardIndex].taken || deck[CardIndex].specialCard);
         deck[CardIndex].taken = true;
-        this.addTakenCardCounter();
+        this.addTakenCardCounter(deck);
         cardOnTop = deck[CardIndex];
         gameStarted = true;
         this.printPlayersCards();
@@ -396,7 +486,7 @@ class GameLogic {
         let res = false;
         for (let i = 0; i < player.cards.length; i++) {
             if (player.cards[i].value === cardOnTop.value || player.cards[i].color === cardOnTop.color ||
-                player.cards[i].value === "change_colorful") {
+                player.cards[i].value === "change_colorful" || player.cards[i].value === "taki_colorful") {
                 res = true;
                 break;
             }
@@ -419,8 +509,9 @@ class GameLogic {
                 let sameColorCards = this.getCardsFromRivalArrbByColor(players[0].cards, cardOnTop.color);
                 if (sameColorCards.length > 0) //a number with the same color exists
                 {
+                    let arrSize = sameColorCards.length
                     this.removeAndSetTopCard(players[0], sameColorCards[0], deck);
-                    if (sameColorCards.length === 0) {
+                    if (arrSize-1 === 0) {
                         openTaki = false;
                         this.checkPlayerWin(players[0], this.checkTopCard(), numOfPlayers, deck);
                     }
@@ -483,15 +574,17 @@ class GameLogic {
                                     {
                                         let superTaki = this.getCardsFromRivalArrbByValue(players[0].cards, "taki_colorful");
                                         if (superTaki.length > 0) {
-                                            let cardOnTopColor =cardOnTop.color;
-                                            this.removeAndSetTopCard(players[0],superTaki[0],deck);
+                                            let cardOnTopColor = cardOnTop.color;
+                                            this.removeAndSetTopCard(players[0], superTaki[0], deck);
                                             openTaki = true;
                                             cardOnTop.color = cardOnTopColor;
+                                            cardOnTop.value = "taki";
                                             cardOnTop.imgSourceFront = this.getCardSource("taki", cardOnTopColor);
-                                            setTimeout(()=>{
-                                                setStateInBoardCB('cardOntop', cardOnTop); 
-                                                this.rivalPlay(deck,numOfPlayers);}
-                                                , 2000);                                            
+                                            // setTimeout(() => {
+                                            setTimeout(()=>{setStateInBoardCB('cardOntop', cardOnTop)},2000);
+                                            this.rivalPlay(deck, numOfPlayers);
+                                            // }
+                                            //     , 2000);
                                         }
                                         if (!goodCardFound) {  // super taki wasn't found
                                             let takiCards = this.getCardsFromRivalArrbByValue(players[0].cards, "taki");
@@ -512,7 +605,7 @@ class GameLogic {
                                                     if (sameValuecards.length > 0) //the same number exists
                                                     {
                                                         this.removeAndSetTopCard(players[0], sameValuecards[0], deck);
-                                                        this.isSpecialCard(players[0], sameValuecards[0], numOfPlayers, deck);
+                                                        this.isSpecialCard(players[0], numOfPlayers, deck, cardOnTop.color);
                                                         goodCardFound = true;
                                                     }
                                                     else //the same number doesn't exist
@@ -544,7 +637,7 @@ class GameLogic {
                     this.changeTurn(numOfPlayers, numOfPlayers, deck);
                 }
                 else if (cards[i].value === "taki") {
-                    this.putAllCardsWithSameColorOfTaki(player, numOfPlayers, deck);
+                    this.rivalActionForTakiCard(player, numOfPlayers, deck);
                 }
                 goodCardFound = true;
                 break;
@@ -579,7 +672,7 @@ class GameLogic {
         cardOnTop.color = color;
         cardOnTop.imgSourceFront = "cards/" + "change_colorful_" + color + ".png";
         this.checkPlayerWin(player, 1, numOfPlayers, deck);
-        //setTimeout(function () { changeOpenDeckColor(color); }, 1000);
+        //setTimeout(() => setStateInBoardCB("cardOnTop", cardOnTop), 1000);
         //setTimeout(function () { this.checkPlayerWin(1); }, 1000);
     }
 
@@ -641,6 +734,9 @@ class GameLogic {
     static onImDoneButtonClicked(player, numOfPlayers, deck) {
         openTaki = false;
         setStateInBoardCB('ImDoneIsHidden', true);
+        if (cardOnTop.value === "2plus") {
+            plus2 += 2;
+        }
         this.checkPlayerWin(player, this.checkTopCard(), numOfPlayers, deck);
     }
 }

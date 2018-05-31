@@ -3,7 +3,7 @@ import GameLogic from '../Logic/GameLogic';
 import PlayerComponent from './PlayerComponent';
 import TableDeck from './TableDeck';
 import Modal from 'react-modal';
-
+import Statistics from './Statistics';
 
 const numberOfPlayer = 2;
 
@@ -16,7 +16,10 @@ const initialState = {
     numOfTurns: 0,
     gameMove: [],
     modalIsOpen: false,
-    ImDoneIsHidden: true
+    ImDoneIsHidden: true,
+    timer: "",
+    avgTimeForTurn: 0,
+    avgTimeForTurnPerGame: ""
 }
 
 
@@ -30,6 +33,7 @@ class GameBoard extends Component {
         this.checkStatusOnTableDeckClicked = this.checkStatusOnTableDeckClicked.bind(this);
         GameLogic.setCbFucntions(this.setNewStateCb, this.addTakenCardCounter);
         this.openModal = this.openModal.bind(this);
+        this.write = 0;
         //this.colorChangedInModal = this.colorChangedInModal.bind(this);
     }
 
@@ -51,6 +55,7 @@ class GameBoard extends Component {
         const deck = GameLogic.createDeck();
         const players = GameLogic.shareCardsToPlayers(numberOfPlayer, deck);
         const cardOnTop = GameLogic.drawOpeningCard(deck);
+        GameLogic.gameTimer();
 
         this.setState(() => {
             return {
@@ -95,7 +100,6 @@ class GameBoard extends Component {
             return {
                 deck,
                 players,
-                numOfTurns,
             };
         });
     }
@@ -104,9 +108,10 @@ class GameBoard extends Component {
     checkStatusOnTableDeckClicked() {
         const { players, deck, cardOnTop } = this.state;
         GameLogic.checkStatusOnTableDeckClicked(players[numberOfPlayer - 1], deck, cardOnTop);
-        this.setState(()=>{return{
-            deck,
-        };
+        this.setState(() => {
+            return {
+                deck,
+            };
         }, () => {
             this.saveGameMove();
         });
@@ -114,13 +119,14 @@ class GameBoard extends Component {
 
     render() {
         const { players, cardOnTop, deck } = this.state;
+        let {numOfTurns, timer, avgTimeForTurn,avgTimeForTurnPerGame} = this.state;
 
         return (
             players.length > 0 && (<div>
                 {players.map(player => (
                     <PlayerComponent key={player.index} checkCard={this.checkCard} player={player} numberOfPlayer={numberOfPlayer} />
                 ))}
-                <TableDeck cardOnTop={cardOnTop} checkStatusOnTableDeckClicked={this.checkStatusOnTableDeckClicked} />
+                <TableDeck cardOnTop={cardOnTop} checkStatusOnTableDeckClicked={this.checkStatusOnTableDeckClicked} /> 
 
                 <button className="ImDoneButton" hidden={this.state.ImDoneIsHidden} onClick={() => GameLogic.onImDoneButtonClicked(players[numberOfPlayer - 1], numberOfPlayer, deck)}>I'm done</button>
                 <Modal className="colorWindow" isOpen={this.state.modalIsOpen}>
@@ -129,6 +135,7 @@ class GameBoard extends Component {
                     <button className="yellow" onClick={() => GameLogic.colorChangedInModal("yellow", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
                     <button className="green" onClick={() => GameLogic.colorChangedInModal("green", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
                 </Modal>
+                <Statistics numOfTurns = {numOfTurns} timer = {timer} avgTimeForTurn = {avgTimeForTurn} players = {players} avgTimeForTurnPerGame = {avgTimeForTurnPerGame}/>
             </div>)
         );
     }
