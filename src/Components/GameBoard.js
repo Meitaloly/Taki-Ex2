@@ -13,13 +13,13 @@ const initialState = {
     cardOnTop: null,
     turnIndex: numberOfPlayer,
     numOfTurns: 0,
-    gameMove: [],
     changeColorWindowIsOpen: false,
     ImDoneIsHidden: true,
     timer: "",
     avgTimeForTurn: 0,
     avgTimeForTurnPerGame: "",
-    transformArrow: 0
+    transformArrow: 0,
+    endGameControllerIsHidden: true
 }
 
 
@@ -29,23 +29,36 @@ class GameBoard extends Component {
         this.state = initialState;
         this.checkCard = this.checkCard.bind(this);
         this.setNewStateCb = this.setNewStateCb.bind(this);
+        this.previousMove = this.previousMove.bind(this);
+        this.nextMove = this.nextMove.bind(this);
+        this.newGame = this.newGame.bind(this);
         this.checkStatusOnTableDeckClicked = this.checkStatusOnTableDeckClicked.bind(this);
         GameLogic.setCbFucntions(this.setNewStateCb, this.addTakenCardCounter);
         this.write = 0;
         //this.colorChangedInModal = this.colorChangedInModal.bind(this);
     }
 
-
-    // colorChangedInModal(color) {
-    //     const {deck} =this.state;
-
-    //     GameLogic.setColorToTopCard(color,deck);
-    //     this.setState({
-    //         modalIsOpen: false 
-    //     });
-    // }
-
     componentDidMount() {
+        this.newGame()
+    }
+
+    saveGameMove(toUpdateMove) {
+        toUpdateMove && GameLogic.addMove(this.state);
+    }
+
+    previousMove() {
+        const currentState = GameLogic.getPrev();
+        this.setState(currentState);
+    }
+
+    nextMove() {
+        const currentState = GameLogic.getNext();
+        this.setState(currentState);
+    }
+
+    newGame() {
+        GameLogic.newGame();
+        this.setState(initialState);
         const deck = GameLogic.createDeck();
         const players = GameLogic.shareCardsToPlayers(numberOfPlayer, deck);
         const cardOnTop = GameLogic.drawOpeningCard(deck);
@@ -57,30 +70,15 @@ class GameBoard extends Component {
                 players,
                 cardOnTop
             };
-        }), () => {
-            this.saveGameMove();
-        };
-    }
-
-    saveGameMove() {
-        const currentState = this.state;
-        delete currentState.gameMove;
-        let gameMove = [];
-        gameMove.push(currentState);
-
-        this.setState(() => {
-            return {
-                gameMove
-            };
         });
     }
 
-    setNewStateCb(key, value) {
+    setNewStateCb(key, value, toUpdateMove = true) {
         this.setState(() => {
             return {
                 [key]: value
             };
-        });
+        }, this.saveGameMove(toUpdateMove));
     }
 
     checkCard(card, playerIndex) {
@@ -93,7 +91,7 @@ class GameBoard extends Component {
         this.setState(() => {
             return {
                 deck,
-                players,
+                players
             };
         });
     }
@@ -104,32 +102,41 @@ class GameBoard extends Component {
         GameLogic.checkStatusOnTableDeckClicked(players[numberOfPlayer - 1], deck, cardOnTop);
         this.setState(() => {
             return {
-                deck,
+                deck
             };
-        }, () => {
-            this.saveGameMove();
         });
     }
 
     render() {
         const { players, cardOnTop, deck } = this.state;
-        let { numOfTurns, timer, avgTimeForTurn, avgTimeForTurnPerGame, transformArrow} = this.state;
+        let { numOfTurns, timer, avgTimeForTurn, avgTimeForTurnPerGame, transformArrow, endGameControllerIsHidden } = this.state;
 
         return (
             players.length > 0 && (<div className="boardContainer">
                 {players.map(player => (
                     <PlayerComponent key={player.index} checkCard={this.checkCard} player={player} numberOfPlayer={numberOfPlayer} />
                 ))}
-                <TableDeck cardOnTop={cardOnTop} checkStatusOnTableDeckClicked={this.checkStatusOnTableDeckClicked} />
-                <img className="arrowImage" style={{ transform: `rotate(${transformArrow}deg)` }} id="arrow" src="images/new_arrow.png" />
-                <button className="ImDoneButton" hidden={this.state.ImDoneIsHidden} onClick={() => GameLogic.onImDoneButtonClicked(players[numberOfPlayer - 1], numberOfPlayer, deck)}>I'm done</button>
+                <div className="tableInfo">
+                    <div>
+                        <img className="arrowImage" style={{ transform: `rotate(${transformArrow}deg)` }} id="arrow" src="images/new_arrow.png" />
+                    </div>
+                    <TableDeck cardOnTop={cardOnTop} checkStatusOnTableDeckClicked={this.checkStatusOnTableDeckClicked} />
+                    <button className="ImDoneButton" hidden={this.state.ImDoneIsHidden} onClick={() => GameLogic.onImDoneButtonClicked(players[numberOfPlayer - 1], numberOfPlayer, deck)}>I'm done</button>
+                    <Statistics numOfTurns={numOfTurns} timer={timer} avgTimeForTurn={avgTimeForTurn} players={players} avgTimeForTurnPerGame={avgTimeForTurnPerGame} />
+                </div>
                 <div className="colorWindow" hidden={!this.state.changeColorWindowIsOpen}>
                     <button className="blue" onClick={() => GameLogic.colorChangedInWindow("blue", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
                     <button className="red" onClick={() => GameLogic.colorChangedInWindow("red", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
                     <button className="yellow" onClick={() => GameLogic.colorChangedInWindow("yellow", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
                     <button className="green" onClick={() => GameLogic.colorChangedInWindow("green", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
                 </div>
-                <Statistics numOfTurns={numOfTurns} timer={timer} avgTimeForTurn={avgTimeForTurn} players={players} avgTimeForTurnPerGame={avgTimeForTurnPerGame} />
+                <div className="endGameController" hidden={endGameControllerIsHidden && !GameLogic.isGameOver()}>
+                    <div className="replay btn-group">
+                        <button className="button" onClick={this.previousMove}>◄Previous</button>
+                        <button className="button" onClick={this.newGame}>☺New Game☺</button>
+                        <button className="button" onClick={this.nextMove}>Next►</button>
+                    </div>
+                </div>
             </div>)
         );
     }

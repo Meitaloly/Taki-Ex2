@@ -1,39 +1,47 @@
-.App {
-  text-align: center;
+.endGameController {
+  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  padding-left: 100px;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
-}
-
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
+.btn-group .button {
+  background-color: #4CAF50; /* Green */
+  border: 1px solid green;
   color: white;
-}
-
-.App-title {
-  font-size: 1.5em;
-}
-
-.App-intro {
-  font-size: large;
-}
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.card {
-  height: 180px;
-  width: 120px;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
   display: inline-block;
-  transition: all .3s ease-in-out;  
-  position: relative;
+  font-size: 16px;
+  cursor: pointer;
+  float: left;
 }
+.btn-group .button:not(:last-child) {
+  border-right: none; /* Prevent double borders */
+}
+.btn-group .button:hover {
+  background-color: #3e8e41;
+}
+
+.boardContainer{
+  display: flex;
+  flex-direction: column;
+}
+
+.arrowImage {
+  width: 100px;
+  height: 100px;
+}
+
+.tableInfo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between center;
+}
+
 .red{
   background-color: red;
 }
@@ -46,6 +54,7 @@
 .green{
   background-color: green;
 }
+
 button.red, button.blue, button.green, button.yellow{
   width: 60px;
   height: 60px;
@@ -80,6 +89,55 @@ body{
   transform: translate(-50%, -50%) rotate(-45deg);
 }
 
+/* Table Deck */
+.tableDeck{
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.tableDeckCardsContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+/* Player */
+.player1, .player2 {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.playerCardsContainer{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-left: 50px;
+}
+
+.player2 {
+  position: fixed;
+  bottom: 0;
+}
+
+/* Cards */
+.card {
+  height: 180px;
+  width: 120px;
+  margin: 0 auto;
+  display: inline-block;
+  transition: all .3s ease-in-out;  
+  position: relative;
+}
+
+.playerCardsContainer>div>.card{
+  margin-left: -50px;
+}
+
+.player2>.playerCardsContainer>div>.card:hover{
+  transform: translateY(-50px);  
+}
 /* ------------------------------------------------------------------------ */
 
 /* .boardContainer {
