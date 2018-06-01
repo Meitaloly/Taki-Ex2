@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import GameLogic from '../Logic/GameLogic';
 import PlayerComponent from './PlayerComponent';
 import TableDeck from './TableDeck';
-import Modal from 'react-modal';
 import Statistics from './Statistics';
 
 const numberOfPlayer = 2;
@@ -15,15 +14,15 @@ const initialState = {
     turnIndex: numberOfPlayer,
     numOfTurns: 0,
     gameMove: [],
-    modalIsOpen: false,
+    changeColorWindowIsOpen: false,
     ImDoneIsHidden: true,
     timer: "",
     avgTimeForTurn: 0,
-    avgTimeForTurnPerGame: ""
+    avgTimeForTurnPerGame: "",
+    transformArrow: 0
 }
 
 
-Modal.setAppElement(document.body);
 class GameBoard extends Component {
     constructor(props) {
         super(props);
@@ -32,13 +31,8 @@ class GameBoard extends Component {
         this.setNewStateCb = this.setNewStateCb.bind(this);
         this.checkStatusOnTableDeckClicked = this.checkStatusOnTableDeckClicked.bind(this);
         GameLogic.setCbFucntions(this.setNewStateCb, this.addTakenCardCounter);
-        this.openModal = this.openModal.bind(this);
         this.write = 0;
         //this.colorChangedInModal = this.colorChangedInModal.bind(this);
-    }
-
-    openModal() {
-        this.setState({ modalIsOpen: true });
     }
 
 
@@ -119,23 +113,23 @@ class GameBoard extends Component {
 
     render() {
         const { players, cardOnTop, deck } = this.state;
-        let {numOfTurns, timer, avgTimeForTurn,avgTimeForTurnPerGame} = this.state;
+        let { numOfTurns, timer, avgTimeForTurn, avgTimeForTurnPerGame, transformArrow} = this.state;
 
         return (
-            players.length > 0 && (<div className = "boardContainer">
+            players.length > 0 && (<div className="boardContainer">
                 {players.map(player => (
                     <PlayerComponent key={player.index} checkCard={this.checkCard} player={player} numberOfPlayer={numberOfPlayer} />
                 ))}
-                <TableDeck cardOnTop={cardOnTop} checkStatusOnTableDeckClicked={this.checkStatusOnTableDeckClicked} /> 
-
+                <TableDeck cardOnTop={cardOnTop} checkStatusOnTableDeckClicked={this.checkStatusOnTableDeckClicked} />
+                <img class="arrowImage" style={{ transform: `rotate(${transformArrow}deg)` }} id="arrow" src="images/new_arrow.png" />
                 <button className="ImDoneButton" hidden={this.state.ImDoneIsHidden} onClick={() => GameLogic.onImDoneButtonClicked(players[numberOfPlayer - 1], numberOfPlayer, deck)}>I'm done</button>
-                <Modal className="colorWindow" isOpen={this.state.modalIsOpen}>
-                    <button className="blue" onClick={() => GameLogic.colorChangedInModal("blue", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
-                    <button className="red" onClick={() => GameLogic.colorChangedInModal("red", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
-                    <button className="yellow" onClick={() => GameLogic.colorChangedInModal("yellow", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
-                    <button className="green" onClick={() => GameLogic.colorChangedInModal("green", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
-                </Modal>
-                <Statistics numOfTurns = {numOfTurns} timer = {timer} avgTimeForTurn = {avgTimeForTurn} players = {players} avgTimeForTurnPerGame = {avgTimeForTurnPerGame}/>
+                <div className="colorWindow" hidden={!this.state.changeColorWindowIsOpen}>
+                    <button className="blue" onClick={() => GameLogic.colorChangedInWindow("blue", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
+                    <button className="red" onClick={() => GameLogic.colorChangedInWindow("red", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
+                    <button className="yellow" onClick={() => GameLogic.colorChangedInWindow("yellow", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
+                    <button className="green" onClick={() => GameLogic.colorChangedInWindow("green", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>
+                </div>
+                <Statistics numOfTurns={numOfTurns} timer={timer} avgTimeForTurn={avgTimeForTurn} players={players} avgTimeForTurnPerGame={avgTimeForTurnPerGame} />
             </div>)
         );
     }

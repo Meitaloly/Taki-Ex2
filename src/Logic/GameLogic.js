@@ -11,6 +11,7 @@ let cardOnTop = null;
 const players = [];
 let gameStarted = false;
 let plus2 = 0;
+let transformArrow = 0;
 
 //statistics
 let turnTime = [];
@@ -248,7 +249,7 @@ class GameLogic {
         deck[cardOnTop.cardId].played = true;
         cardOnTop = cardToPutOnTop;
         if (turnIndex === players[0].index) {
-            setTimeout(() => {setStateInBoardCB('cardOnTop', cardOnTop)}, 2000);
+            setTimeout(() => { setStateInBoardCB('cardOnTop', cardOnTop) }, 2000);
         }
         else {
             setStateInBoardCB('cardOnTop', cardOnTop);
@@ -263,7 +264,7 @@ class GameLogic {
             this.checkPlayerWin(player, 1, numOfPlayers, deck);
         }
         else if (cardOnTop.value === "change_colorful" /*&& turnIndex === player.index*/) {
-            setStateInBoardCB('modalIsOpen', true);
+            setStateInBoardCB('changeColorWindowIsOpen', true);
             //this.changeTurn(this.checkTopCard(), numOfPlayers, deck);
         }
         else if (cardOnTop.value === "stop") {
@@ -361,6 +362,7 @@ class GameLogic {
         else {
             if (turnIndex === players[1].index) {
                 this.setTurnTime(endTime);
+                this.rotateArrow();
             }
             if (number === numOfPlayers) {
                 if (cardOnTop.value === "stop") {
@@ -371,14 +373,19 @@ class GameLogic {
                 }
             }
             else {
-                //rotateArrow();
+                //this.rotateArrow();
                 numOfTurns += number;
 
             }
+            //this.rotateArrow();
             console.log("before chnging turn: " + turnIndex);
+            //let saveTurnIndex = turnIndex;
             turnIndex = ((turnIndex - 1) + number) % numOfPlayers + 1;
             setStateInBoardCB('turnIndex', turnIndex);
             setStateInBoardCB('numOfTurns', numOfTurns);
+            // if(saveTurnIndex !== turnIndex){
+            //     this.rotateArrow();
+            // }
             console.log("after chnging turn: " + turnIndex);
             startTime = fullTime;
 
@@ -511,7 +518,7 @@ class GameLogic {
                 {
                     let arrSize = sameColorCards.length
                     this.removeAndSetTopCard(players[0], sameColorCards[0], deck);
-                    if (arrSize-1 === 0) {
+                    if (arrSize - 1 === 0) {
                         openTaki = false;
                         this.checkPlayerWin(players[0], this.checkTopCard(), numOfPlayers, deck);
                     }
@@ -581,7 +588,7 @@ class GameLogic {
                                             cardOnTop.value = "taki";
                                             cardOnTop.imgSourceFront = this.getCardSource("taki", cardOnTopColor);
                                             // setTimeout(() => {
-                                            setTimeout(()=>{setStateInBoardCB('cardOntop', cardOnTop)},2000);
+                                            setTimeout(() => { setStateInBoardCB('cardOntop', cardOnTop) }, 2000);
                                             this.rivalPlay(deck, numOfPlayers);
                                             // }
                                             //     , 2000);
@@ -671,8 +678,11 @@ class GameLogic {
         let color = this.chooseColor(player);
         cardOnTop.color = color;
         cardOnTop.imgSourceFront = "cards/" + "change_colorful_" + color + ".png";
-        this.checkPlayerWin(player, 1, numOfPlayers, deck);
-        //setTimeout(() => setStateInBoardCB("cardOnTop", cardOnTop), 1000);
+        setTimeout(() => { this.setColorToTopCard(color, deck); }, 2000);
+        setTimeout(() => { setStateInBoardCB('modalIsOpen', false); }, (2000));
+        setTimeout(() => { this.checkPlayerWin(player, 1, numOfPlayers, deck); }, 2000);
+
+        //setTimeout(function () { changeOpenDeckColor(color); }, 1000);
         //setTimeout(function () { this.checkPlayerWin(1); }, 1000);
     }
 
@@ -721,9 +731,9 @@ class GameLogic {
         return res;
     }
 
-    static colorChangedInModal(color, deck, player, numOfPlayers) {
+    static colorChangedInWindow(color, deck, player, numOfPlayers) {
         this.setColorToTopCard(color, deck);
-        setStateInBoardCB('modalIsOpen', false);
+        setStateInBoardCB('changeColorWindowIsOpen', false);
         // this.setState({
         //     modalIsOpen: false 
         // });
@@ -738,6 +748,17 @@ class GameLogic {
             plus2 += 2;
         }
         this.checkPlayerWin(player, this.checkTopCard(), numOfPlayers, deck);
+    }
+
+    static rotateArrow() {
+        let newTransformAroow = transformArrow + 180;
+        
+        if(newTransformAroow >= 360){
+            newTransformAroow =newTransformAroow - 360;
+        }
+        transformArrow = newTransformAroow;
+        setStateInBoardCB('transformArrow', newTransformAroow);
+        console.log("rotating");
     }
 }
 export default GameLogic;
