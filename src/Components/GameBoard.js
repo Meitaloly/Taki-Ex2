@@ -121,7 +121,7 @@ class GameBoard extends Component {
                     <PlayerComponent key={player.index} checkCard={this.checkCard} player={player} numberOfPlayer={numberOfPlayer} />
                 ))}
                 <TableDeck cardOnTop={cardOnTop} checkStatusOnTableDeckClicked={this.checkStatusOnTableDeckClicked} />
-                <img class="arrowImage" style={{ transform: `rotate(${transformArrow}deg)` }} id="arrow" src="images/new_arrow.png" />
+                <img className="arrowImage" style={{ transform: `rotate(${transformArrow}deg)` }} id="arrow" src="images/new_arrow.png" />
                 <button className="ImDoneButton" hidden={this.state.ImDoneIsHidden} onClick={() => GameLogic.onImDoneButtonClicked(players[numberOfPlayer - 1], numberOfPlayer, deck)}>I'm done</button>
                 <div className="colorWindow" hidden={!this.state.changeColorWindowIsOpen}>
                     <button className="blue" onClick={() => GameLogic.colorChangedInWindow("blue", deck, players[numberOfPlayer - 1], numberOfPlayer)}></button>

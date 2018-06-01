@@ -184,8 +184,13 @@ class GameLogic {
                     this.isSpecialCard(players[playerIndex - 1], numOfPlayers, deck, cardOnTopColor);
                 }
                 else {
-                    alert("Wrong!");
-                    //wrongSound.play();
+                    if (plus2 > 0) {
+                        alert("you have to take " + plus2 + " cards from deck!");
+                    }
+                    else {
+                        alert("Wrong!");
+                        //wrongSound.play();}
+                    }
                 }
             }
         }
@@ -193,6 +198,7 @@ class GameLogic {
             alert("not your turn!");
         }
     }
+
 
     static checkValidCard(card, isOpenTaki) {
         let isValid = false;
@@ -202,8 +208,15 @@ class GameLogic {
             }
         }
         else {
-            if (card.color === cardOnTop.color || card.value === cardOnTop.value || card.value === "change_colorful" || card.value === "taki_colorful") {
-                isValid = true;
+            if (plus2 > 0) {
+                if (card.value === "2plus") {
+                    isValid = true;
+                }
+            }
+            else {
+                if (card.color === cardOnTop.color || card.value === cardOnTop.value || card.value === "change_colorful" || card.value === "taki_colorful") {
+                    isValid = true;
+                }
             }
         }
         return isValid;
@@ -248,13 +261,13 @@ class GameLogic {
     static setNewcardOnTop(cardToPutOnTop, deck) {
         deck[cardOnTop.cardId].played = true;
         cardOnTop = cardToPutOnTop;
-        if (turnIndex === players[0].index) {
-            setTimeout(() => { setStateInBoardCB('cardOnTop', cardOnTop) }, 2000);
-        }
-        else {
-            setStateInBoardCB('cardOnTop', cardOnTop);
-        }
-        //cardOnTop = Object.assign(cardOnTop, cardToPutOnTop);
+        setStateInBoardCB('cardOnTop', cardOnTop);
+        // if (turnIndex === players[0].index) {
+        //     setTimeout(() => { setStateInBoardCB('cardOnTop', cardOnTop) }, 2000);
+        // }
+        // else {
+        //     setStateInBoardCB('cardOnTop', cardOnTop);
+        // }
         console.log("card on top is : " + cardOnTop.value + " " + cardOnTop.color);
     }
 
@@ -362,7 +375,7 @@ class GameLogic {
         else {
             if (turnIndex === players[1].index) {
                 this.setTurnTime(endTime);
-                this.rotateArrow();
+                //this.rotateArrow();
             }
             if (number === numOfPlayers) {
                 if (cardOnTop.value === "stop") {
@@ -379,30 +392,30 @@ class GameLogic {
             }
             //this.rotateArrow();
             console.log("before chnging turn: " + turnIndex);
-            //let saveTurnIndex = turnIndex;
+            let saveTurnIndex = turnIndex;
             turnIndex = ((turnIndex - 1) + number) % numOfPlayers + 1;
             setStateInBoardCB('turnIndex', turnIndex);
             setStateInBoardCB('numOfTurns', numOfTurns);
-            // if(saveTurnIndex !== turnIndex){
-            //     this.rotateArrow();
-            // }
+            if (saveTurnIndex !== turnIndex) {
+                this.rotateArrow();
+            }
             console.log("after chnging turn: " + turnIndex);
             startTime = fullTime;
 
             if (turnIndex !== numOfPlayers) {
                 console.log("rivals turn");
-                this.rivalPlay(deck, numOfPlayers)
-                // setTimeout(() => { this.rivalPlay(deck, numOfPlayers) }, 2000);
+                //this.rivalPlay(deck, numOfPlayers)
+                setTimeout(() => { this.rivalPlay(deck, numOfPlayers) }, 2000);
             }
-            else {
-                if (plus2 > 0 && this.playerHasNo2PlusCards(players[1], numOfPlayers, deck)) {
-                    let numOfCardsPlayerHasToTake = plus2;
-                    for (let i = 0; i < numOfCardsPlayerHasToTake; i++) {
-                        this.addCardToPlayersArr(players[1].cards, deck);
-                    }
-                    this.changeTurn(1, numOfPlayers, deck);
-                }
-            }
+            // else {
+            //     if (plus2 > 0 && this.playerHasNo2PlusCards(players[1], numOfPlayers, deck)) {
+            //         let numOfCardsPlayerHasToTake = plus2;
+            //         for (let i = 0; i < numOfCardsPlayerHasToTake; i++) {
+            //             this.addCardToPlayersArr(players[1].cards, deck);
+            //         }
+            //         setTimeout(() => { this.changeTurn(1, numOfPlayers, deck) }, 2000);
+            //     }
+            // }
         }
     }
 
@@ -477,13 +490,23 @@ class GameLogic {
         if (!gameOver) {
             let isPlayerTurn = this.checkPlayerTurn(player);
             if (isPlayerTurn) {
-                let hasCardsToUse = this.checkPlayerCards(player);
-                if (hasCardsToUse) {
-                    alert("you have cards to use");
-                    //wrongSound.play();
+                if (plus2 > 0) {
+                    if (this.playerHasNo2PlusCards(player, 2, deck)) {
+                        let numOfCardsPlayerHasToTake = plus2;
+                        for (let i = 0; i < numOfCardsPlayerHasToTake; i++) {
+                            this.addCardToPlayersArr(players[1].cards, deck);
+                        }
+                    }
                 }
-                else if (!hasCardsToUse && !openTaki) {
-                    this.addCardToPlayersArr(player.cards, deck);
+                else {
+                    let hasCardsToUse = this.checkPlayerCards(player);
+                    if (hasCardsToUse) {
+                        alert("you have cards to use");
+                        //wrongSound.play();
+                    }
+                    else if (!hasCardsToUse && !openTaki) {
+                        this.addCardToPlayersArr(player.cards, deck);
+                    }
                 }
             }
         }
@@ -516,26 +539,22 @@ class GameLogic {
                 let sameColorCards = this.getCardsFromRivalArrbByColor(players[0].cards, cardOnTop.color);
                 if (sameColorCards.length > 0) //a number with the same color exists
                 {
-                    let arrSize = sameColorCards.length
                     this.removeAndSetTopCard(players[0], sameColorCards[0], deck);
-                    if (arrSize - 1 === 0) {
-                        openTaki = false;
-                        this.checkPlayerWin(players[0], this.checkTopCard(), numOfPlayers, deck);
-                    }
-                    else {
-                        this.rivalPlay(deck, numOfPlayers);
-                    }
+                    setTimeout(() => { this.rivalPlay(deck, numOfPlayers) }, 2000);
                 }
                 else {
                     openTaki = false;
+                    if (cardOnTop.value === "2plus") {
+                        plus2 += 2;
+                    }
                     this.checkPlayerWin(players[0], this.checkTopCard(), numOfPlayers, deck);
                 }
             }
-            else {
+            else { // not open taki
                 goodCardFound = false;
                 let plus2Cards = this.getCardsFromRivalArrbByValue(players[0].cards, "2plus");
                 if (plus2Cards.length > 0) {  // 2plus card exist 
-                    if (plus2 > 0) { // there is an active 2plus card on deck
+                    if (plus2 > 0 || cardOnTop.value === "2plus") { // there is an active/not active 2plus card on deck
                         this.removeAndSetTopCard(players[0], plus2Cards[0], deck);
                         plus2 += 2;
                         this.checkPlayerWin(players[0], 1, numOfPlayers, deck);
@@ -752,9 +771,9 @@ class GameLogic {
 
     static rotateArrow() {
         let newTransformAroow = transformArrow + 180;
-        
-        if(newTransformAroow >= 360){
-            newTransformAroow =newTransformAroow - 360;
+
+        if (newTransformAroow >= 360) {
+            newTransformAroow = newTransformAroow - 360;
         }
         transformArrow = newTransformAroow;
         setStateInBoardCB('transformArrow', newTransformAroow);
