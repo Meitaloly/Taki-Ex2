@@ -9,9 +9,9 @@ class CardComponent extends Component {
 
     render() {
         const { card, checkCard, playerIndex, isOpenCard, isInDeck, checkStatusOnTableDeckClicked } = this.props;
-
+        let {cardMarginLeft } = this.props;       
         return (
-            <div>
+            <div style={!isInDeck?{ marginLeft:cardMarginLeft}:null}>
                 {/* <img src={card.imgSourceFront} onClick={() => checkCard(card, playerIndex)} /> */}
                 {isOpenCard ? <img className="card" src={card.imgSourceFront} onClick={isInDeck ? null : () => checkCard(card, playerIndex)} />
                     : <img src={card.imgSourceBack} className="card" onClick={isInDeck ? () => checkStatusOnTableDeckClicked() : null} />}
