@@ -8,16 +8,20 @@ class Statistics extends Component {
 
 
     render() {
-        let { numOfTurns, players, timer, avgTimeForTurn, avgTimeForTurnPerGame,numOfCardsInDeck } = this.props;
+        let { numOfTurns, players, timer, avgTimeForTurn, avgTimeForTurnPerGame, numOfCardsInDeck } = this.props;
         return (
             <div className="Statistics">
-                <div> Cards in deck: {numOfCardsInDeck} </div>
-                <div>Number of turns: {numOfTurns}</div>
-                <div>Time: {timer}</div>
-                <div>The avg of your turns time is: {avgTimeForTurn}</div>
-                <div>The avg of your turns time in all games is: {avgTimeForTurnPerGame}</div>
-                <div>player {players[0].index} had one card {players[0].oneCardLeftCounter} times </div>
-                <div>player {players[1].index} had one card {players[1].oneCardLeftCounter} times </div>
+                <div className="leftData">
+                    <div> Cards in deck: {numOfCardsInDeck} </div>
+                    <div>Number of turns: {numOfTurns}</div>
+                    <div>Time: {timer}</div>
+                </div>
+                <div className="rightData">
+                    <div>The avg of your turns time is: {avgTimeForTurn}</div>
+                    <div>The avg of your turns time in all games is: {avgTimeForTurnPerGame}</div>
+                    <div>player {players[0].index} had one card {players[0].oneCardLeftCounter} times </div>
+                    <div>player {players[1].index} had one card {players[1].oneCardLeftCounter} times </div>
+                </div>
             </div>
         );
     }

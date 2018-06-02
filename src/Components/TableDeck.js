@@ -12,7 +12,6 @@ class TableDeck extends Component {
 
         return (
             <div className="tableDeck">
-                <div> Deck: </div>
                 <div className="tableDeckCardsContainer">
                     <CardComponent className="card" card={cardOnTop} isOpenCard={false} isInDeck={true} checkStatusOnTableDeckClicked={checkStatusOnTableDeckClicked} />
                     <CardComponent className="card" card={cardOnTop} isOpenCard={true} isInDeck={true} checkStatusOnTableDeckClicked={checkStatusOnTableDeckClicked} />

@@ -5,6 +5,7 @@
   position: fixed;
   right: 0;
   top: 0;
+  color:white;
   /* height: 100%;
   position: absolute;
   padding-left: 100px; */
@@ -40,6 +41,7 @@
 }
 
 .tableInfo {
+  margin: 0 auto;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -108,7 +110,7 @@ body{
 }
 
 /* Player */
-.player1, .player2 {
+.player1, .player2, .middleDiv {
   display: flex;
   flex-direction: column;
   text-align: center;

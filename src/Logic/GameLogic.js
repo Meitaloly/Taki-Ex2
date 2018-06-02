@@ -1,6 +1,6 @@
 const cardColors = { 0: "blue", 1: "red", 2: "green", 3: "yellow" }
 const numOfColors = 4;
-const numOfCardsForEachPlayer = 8;
+const numOfCardsForEachPlayer =1;
 let setStateInBoardCB;
 let takenCardsCounter = 0;
 let turnIndex = 2;
@@ -14,6 +14,8 @@ let plus2 = 0;
 let transformArrow = 0;
 let gameMove = [];
 let arrIndex = 0;
+let avg = 0;
+let avgPerGame = 0;
 
 
 //statistics
@@ -27,6 +29,13 @@ let min = 0;
 let stopTimer = false;
 let timeInterval;
 let prevIndex = 1;
+let takingCard;
+let wrongSound;
+let changeColorSound;
+let winnerSound;
+let loserSound;
+let shuffleSound;
+
 
 class GameLogic {
     static newGame() {
@@ -43,7 +52,7 @@ class GameLogic {
         plus2 = 0;
         gameStarted = false;
         transformArrow = 0;
-        avgTurnTimePerGame = [];
+        //avgTurnTimePerGame = [];
         fullTime = "";
         startTime = "00:01";
         endTime;
@@ -51,6 +60,26 @@ class GameLogic {
         min = 0;
         stopTimer = false;
         clearInterval(timeInterval);
+        this.setSounds();
+    }
+
+    static setSounds() {
+        wrongSound = new Audio();
+        wrongSound.src = "sounds/wrong.mp3";
+        changeColorSound = new Audio();
+        changeColorSound.src = "sounds/changeColorSound.mp3";
+        winnerSound = new Audio();
+        winnerSound.src = "sounds/winner.mp3";
+        loserSound = new Audio();
+        loserSound.src = "sounds/Fail.mp3";
+        shuffleSound = new Audio();
+        shuffleSound.src = "sounds/Shuffling Cards.mp3";
+        takingCard = new Audio();
+        takingCard.src = "sounds/takingCard.mp3";
+    }
+
+    static setAvgPerGame() {
+        setStateInBoardCB("avgTimeForTurnPerGame", avgPerGame);
     }
 
     static addMove(state) {
@@ -232,8 +261,8 @@ class GameLogic {
                     this.removeAndSetTopCard(players[playerIndex - 1], card, deck);
                 }
                 else {
-                    alert("Wrong!");
-                    //wrongSound.play();
+                    //alert("Wrong!");
+                    wrongSound.play();
                 }
             }
             else {
@@ -247,14 +276,16 @@ class GameLogic {
                         alert("you have to take " + plus2 + " cards from deck!");
                     }
                     else {
-                        alert("Wrong!");
-                        //wrongSound.play();}
+                        //alert("Wrong!");
+                        wrongSound.play();
                     }
                 }
             }
         }
         else {
             alert("not your turn!");
+            wrongSound.play();
+
         }
     }
 
@@ -432,20 +463,19 @@ class GameLogic {
     }
 
     static findAvgOfTurnTime(arr, isAllGames) {
-        var sum = 0;
-        let avg;
+        let sum = 0;
         if (arr.length !== 0) {
-            for (var i = 0; i < arr.length; i++) {
+            for (let i = 0; i < arr.length; i++) {
                 sum += arr[i];
             }
-            var avgNum = Number(sum / arr.length);
+            let avgNum = Number(sum / arr.length);
             avg = Number(avgNum.toFixed(2));
         }
         else {
             avg = 0;
         }
-        if (!isAllGames) {
-            avgTurnTimePerGame.push(avg);
+        if (isAllGames) {
+            avgPerGame = avg;
             setStateInBoardCB("avgTimeForTurnPerGame", avg, false);
         }
         setStateInBoardCB("avgTimeForTurn", avg, false);
@@ -491,15 +521,6 @@ class GameLogic {
                 //this.rivalPlay(deck, numOfPlayers)
                 setTimeout(() => { this.rivalPlay(deck, numOfPlayers) }, 2000);
             }
-            // else {
-            //     if (plus2 > 0 && this.playerHasNo2PlusCards(players[1], numOfPlayers, deck)) {
-            //         let numOfCardsPlayerHasToTake = plus2;
-            //         for (let i = 0; i < numOfCardsPlayerHasToTake; i++) {
-            //             this.addCardToPlayersArr(players[1].cards, deck);
-            //         }
-            //         setTimeout(() => { this.changeTurn(1, numOfPlayers, deck) }, 2000);
-            //     }
-            // }
         }
     }
 
@@ -534,7 +555,7 @@ class GameLogic {
 
     static checkPlayerWin(player, num, numOfPlayers, deck) {
         if (player.cards.length === 0) {
-            setTimeout(this.stopTheGame, 1000);
+            setTimeout(() => { this.stopTheGame() }, 1000);
             alert("you win");
         }
         else {
@@ -543,6 +564,8 @@ class GameLogic {
     }
 
     static stopTheGame() {
+        avgTurnTimePerGame.push(avg);
+        this.findAvgOfTurnTime(avgTurnTimePerGame, true);
         endTime = fullTime;
         stopTimer = true;
         gameOver = true;
@@ -587,7 +610,7 @@ class GameLogic {
                     let hasCardsToUse = this.checkPlayerCards(player);
                     if (hasCardsToUse) {
                         alert("you have cards to use");
-                        //wrongSound.play();
+                        wrongSound.play();
                     }
                     else if (!hasCardsToUse && !openTaki) {
                         this.addCardToPlayersArr(player.cards, deck);
@@ -620,23 +643,6 @@ class GameLogic {
     static rivalPlay(deck, numOfPlayers) {
         let goodCardFound = false;
         if (!gameOver) {
-            // if (openTaki) {
-            //     let sameColorCards = this.getCardsFromRivalArrbByColor(players[0].cards, cardOnTop.color);
-            //     if (sameColorCards.length > 0) //a number with the same color exists
-            //     {
-            //         this.removeAndSetTopCard(players[0], sameColorCards[0], deck);
-            //         //setTimeout(() => { this.rivalPlay(deck, numOfPlayers) }, 2000);
-            //         this.checkPlayerWin(players[0], numOfPlayers, numOfPlayers, deck);
-            //     }
-            //     else {
-            //         openTaki = false;
-            //         if (cardOnTop.value === "2plus") {
-            //             plus2 += 2;
-            //         }
-            //         this.checkPlayerWin(players[0], this.checkTopCard(), numOfPlayers, deck);
-            //     }
-            // }
-
             goodCardFound = false;
             let plus2Cards = this.getCardsFromRivalArrbByValue(players[0].cards, "2plus");
             if (plus2Cards.length > 0) {  // 2plus card exist 
@@ -686,21 +692,14 @@ class GameLogic {
                                 {
                                     let superTaki = this.getCardsFromRivalArrbByValue(players[0].cards, "taki_colorful");
                                     if (superTaki.length > 0) {
+                                        goodCardFound = true;
                                         let cardOnTopColor = cardOnTop.color;
                                         this.removeAndSetTopCard(players[0], superTaki[0], deck);
-                                        //openTaki = true;
                                         cardOnTop.color = cardOnTopColor;
                                         cardOnTop.value = "taki";
-                                        //cardOnTop.imgSourceFront = this.getCardSource("taki", cardOnTopColor);
-                                        //setTimeout(() => {
-                                        //setTimeout(() => { setStateInBoardCB('cardOntop', cardOnTop); }, 2000);
+                                        cardOnTop.imgSourceFront = this.getCardSource("taki", cardOnTop.color);
+                                        setTimeout(() => { setStateInBoardCB('cardOntop', cardOnTop); }, 2000);
                                         this.rivalActionForTakiCard(players[0], numOfPlayers, deck);
-                                        //}, 2000);
-
-                                        // // setTimeout(() => {
-                                        // this.rivalPlay(deck, numOfPlayers);
-                                        // }
-                                        //     , 2000);
                                     }
                                     if (!goodCardFound) {  // super taki wasn't found
                                         let takiCards = this.getCardsFromRivalArrbByValue(players[0].cards, "taki");
