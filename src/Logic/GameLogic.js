@@ -1,6 +1,6 @@
 const cardColors = { 0: "blue", 1: "red", 2: "green", 3: "yellow" }
 const numOfColors = 4;
-const numOfCardsForEachPlayer =1;
+const numOfCardsForEachPlayer =8;
 let setStateInBoardCB;
 let takenCardsCounter = 0;
 let turnIndex = 2;
@@ -243,7 +243,7 @@ class GameLogic {
         takenCardsCounter++;
         setStateInBoardCB('takenCardsCounter', takenCardsCounter, false);
         if (takenCardsCounter === deck.length) {
-            //shuffleSound.play();
+            shuffleSound.play();
             for (let i = 0; i < deck.length; i++) {
                 if (deck[i].played) {
                     deck[i].played = false;
