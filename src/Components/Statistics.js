@@ -12,9 +12,9 @@ class Statistics extends Component {
         return (
             <div className="Statistics">
                 <div className="leftData">
+                    <div>Time: {timer}</div>
                     <div>Cards in deck: {numOfCardsInDeck} </div>
                     <div>Number of turns: {numOfTurns}</div>
-                    <div>Time: {timer}</div>
                 </div>
                 <div className="rightData">
                     <div>Avg of turns time: {avgTimeForTurn}</div>
