@@ -212,6 +212,7 @@ class GameLogic {
     }
 
     static addCardToPlayersArr(arrToAddTheCard, deck) {
+        takingCard.play();
         console.log(arrToAddTheCard);
         let cardIndex;
         do {
@@ -261,7 +262,6 @@ class GameLogic {
                     this.removeAndSetTopCard(players[playerIndex - 1], card, deck);
                 }
                 else {
-                    //alert("Wrong!");
                     wrongSound.play();
                 }
             }
@@ -276,7 +276,6 @@ class GameLogic {
                         alert("you have to take " + plus2 + " cards from deck!");
                     }
                     else {
-                        //alert("Wrong!");
                         wrongSound.play();
                     }
                 }
@@ -344,6 +343,7 @@ class GameLogic {
     }
 
     static setColorToTopCard(color, deck) {
+        changeColorSound.play();
         let newCard = cardOnTop;
         newCard.color = color;
         newCard.imgSourceFront = "cards/" + "change_colorful_" + color + ".png";
@@ -412,7 +412,7 @@ class GameLogic {
         let SameColorCards = this.getCardsFromRivalArrbByColor(player.cards, cardOnTop.color);
         if (SameColorCards.length > 0) {
             openTaki = true;
-            let takiTime = setInterval(() => { this.newTimeOut(player, deck, numOfPlayers, SameColorCards, takiTime) }, 1000);
+            let takiTime = setInterval(() => { this.newTimeOut(player, deck, numOfPlayers, SameColorCards, takiTime) }, 2000);
         }
         else {
             this.checkPlayerWin(player, 1, numOfPlayers, deck);
@@ -555,8 +555,9 @@ class GameLogic {
 
     static checkPlayerWin(player, num, numOfPlayers, deck) {
         if (player.cards.length === 0) {
+            turnIndex === players[numOfPlayers-1].index? winnerSound.play() : loserSound.play();
             setTimeout(() => { this.stopTheGame() }, 1000);
-            alert("you win");
+            
         }
         else {
             this.changeTurn(num, numOfPlayers, deck);
@@ -609,7 +610,6 @@ class GameLogic {
                 else {
                     let hasCardsToUse = this.checkPlayerCards(player);
                     if (hasCardsToUse) {
-                        alert("you have cards to use");
                         wrongSound.play();
                     }
                     else if (!hasCardsToUse && !openTaki) {
@@ -786,7 +786,7 @@ class GameLogic {
         let color = this.chooseColor(player);
         cardOnTop.color = color;
         cardOnTop.imgSourceFront = "cards/" + "change_colorful_" + color + ".png";
-        setTimeout(() => { this.setColorToTopCard(color, deck); }, 2000);
+        setTimeout(() => { this.setColorToTopCard(color, deck); }, 1000);
         setTimeout(() => { setStateInBoardCB('changeColorWindowIsOpen', false, false); }, (2000));
         setTimeout(() => { this.checkPlayerWin(player, 1, numOfPlayers, deck); }, 2000);
 
