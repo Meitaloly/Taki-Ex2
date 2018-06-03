@@ -1,4 +1,4 @@
-.endGameController, .colorWindowContainer, .boardContainer {
+.endGameController, .colorWindowContainer {
   z-index: 9999;
   bottom:0;
   left:0;
@@ -33,11 +33,12 @@
 .boardContainer{
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
 }
 
 .arrowImage {
-  width: 100px;
-  height: 100px;
+  width: 70px;
+  height: 70px;
 }
 
 .tableInfo {
@@ -80,6 +81,10 @@ body{
   background-color:green;
   display: flex;
   justify-content: center;
+}
+
+.App, .boardContainer {
+  height: 100%;
 }
 
 .ImDoneButton{

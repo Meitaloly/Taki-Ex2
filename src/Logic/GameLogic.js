@@ -79,7 +79,7 @@ class GameLogic {
     }
 
     static setAvgPerGame() {
-        setStateInBoardCB("avgTimeForTurnPerGame", avgPerGame);
+        setStateInBoardCB("avgTimeForTurnPerGame", avgPerGame, false);
     }
 
     static addMove(state) {

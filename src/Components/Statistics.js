@@ -12,15 +12,15 @@ class Statistics extends Component {
         return (
             <div className="Statistics">
                 <div className="leftData">
-                    <div> Cards in deck: {numOfCardsInDeck} </div>
+                    <div>Cards in deck: {numOfCardsInDeck} </div>
                     <div>Number of turns: {numOfTurns}</div>
                     <div>Time: {timer}</div>
                 </div>
                 <div className="rightData">
-                    <div>The avg of your turns time is: {avgTimeForTurn}</div>
-                    <div>The avg of your turns time in all games is: {avgTimeForTurnPerGame}</div>
-                    <div>player {players[0].index} had one card {players[0].oneCardLeftCounter} times </div>
-                    <div>player {players[1].index} had one card {players[1].oneCardLeftCounter} times </div>
+                    <div>Avg of turns time: {avgTimeForTurn}</div>
+                    <div>Avg of turns time in all games: {avgTimeForTurnPerGame}</div>
+                    <div>Player {players[0].index} had one card {players[0].oneCardLeftCounter} times </div>
+                    <div>Player {players[1].index} had one card {players[1].oneCardLeftCounter} times </div>
                 </div>
             </div>
         );

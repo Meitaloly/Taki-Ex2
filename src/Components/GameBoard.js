@@ -122,13 +122,13 @@ class GameBoard extends Component {
                     <PlayerComponent /*key={players[0].index}*/ checkCard={this.checkCard} player={players[0]} numberOfPlayer={numberOfPlayer} cardMarginLeft={cardMarginLeft[0]} />
                     {/* ))} */}
                     <div className="middleDiv">
-                        <Statistics numOfTurns={numOfTurns} timer={timer} avgTimeForTurn={avgTimeForTurn} players={players} avgTimeForTurnPerGame={avgTimeForTurnPerGame} numOfCardsInDeck={deck.length - takenCardsCounter} />
                         <div className="tableInfo">
                             <div>
                                 <img className="arrowImage" style={{ transform: `rotate(${transformArrow}deg)` }} id="arrow" src="images/new_arrow.png" />
                             </div>
                             <TableDeck cardOnTop={cardOnTop} checkStatusOnTableDeckClicked={this.checkStatusOnTableDeckClicked} />
                             <button className="ImDoneButton" hidden={this.state.ImDoneIsHidden} onClick={() => GameLogic.onImDoneButtonClicked(players[numberOfPlayer - 1], numberOfPlayer, deck)}>I'm done</button>
+                            <Statistics numOfTurns={numOfTurns} timer={timer} avgTimeForTurn={avgTimeForTurn} players={players} avgTimeForTurnPerGame={avgTimeForTurnPerGame} numOfCardsInDeck={deck.length - takenCardsCounter} />
                         </div>
                     </div>
                     <PlayerComponent /*key={players[1].index}*/ checkCard={this.checkCard} player={players[1]} numberOfPlayer={numberOfPlayer} cardMarginLeft={cardMarginLeft[1]} />
