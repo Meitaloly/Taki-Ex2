@@ -88,7 +88,6 @@ class GameBoard extends Component {
     checkCard(card, playerIndex) {
         console.log(this.state.turnIndex);
         const { players, deck } = this.state;
-        let { numOfTurns } = this.state;
         //GameLogic.checkCard(players[playerIndex - 1], card, numberOfPlayer, deck);
         GameLogic.checkCard(playerIndex, card, numberOfPlayer, deck);
 
@@ -124,7 +123,7 @@ class GameBoard extends Component {
                     <div className="middleDiv">
                         <div className="tableInfo">
                             <div>
-                                <img className="arrowImage" style={{ transform: `rotate(${transformArrow}deg)` }} id="arrow" src="images/new_arrow.png" />
+                                <img className="arrowImage" alt="arrow" style={{ transform: `rotate(${transformArrow}deg)` }} id="arrow" src="images/new_arrow.png" />
                             </div>
                             <TableDeck cardOnTop={cardOnTop} checkStatusOnTableDeckClicked={this.checkStatusOnTableDeckClicked} />
                             <button className="ImDoneButton" hidden={this.state.ImDoneIsHidden} onClick={() => GameLogic.onImDoneButtonClicked(players[numberOfPlayer - 1], numberOfPlayer, deck)}>I'm done</button>

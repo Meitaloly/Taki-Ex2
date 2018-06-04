@@ -138,10 +138,10 @@ class GameLogic {
     static getCardSource(value, color) {
         let cardSource;
         if (value === "change_colorful" || value === "taki_colorful") {
-            cardSource = "cards/" + value + ".png";
+            cardSource = `cards/${value}.png`;
         }
         else {
-            cardSource = "cards/" + value + "_" + color + ".png";
+            cardSource = `cards/${value}_${color}.png`;
         }
         return cardSource;
     }
@@ -273,7 +273,7 @@ class GameLogic {
                 }
                 else {
                     if (plus2 > 0) {
-                        alert("you have to take " + plus2 + " cards from deck!");
+                        alert(`you have to take ${plus2}cards from deck!"`);
                     }
                     else {
                         wrongSound.play();
@@ -282,7 +282,6 @@ class GameLogic {
             }
         }
         else {
-            alert("not your turn!");
             wrongSound.play();
 
         }
@@ -346,7 +345,7 @@ class GameLogic {
         changeColorSound.play();
         let newCard = cardOnTop;
         newCard.color = color;
-        newCard.imgSourceFront = "cards/" + "change_colorful_" + color + ".png";
+        newCard.imgSourceFront = `cards/change_colorful_${color}.png`;
         this.setNewcardOnTop(newCard, deck);
     }
 
@@ -785,7 +784,7 @@ class GameLogic {
         this.removeAndSetTopCard(player, card, deck); //send right parameters!
         let color = this.chooseColor(player);
         cardOnTop.color = color;
-        cardOnTop.imgSourceFront = "cards/" + "change_colorful_" + color + ".png";
+        cardOnTop.imgSourceFront = `cards/change_colorful_${color}.png`;
         setTimeout(() => { this.setColorToTopCard(color, deck); }, 1000);
         setTimeout(() => { setStateInBoardCB('changeColorWindowIsOpen', false, false); }, (2000));
         setTimeout(() => { this.checkPlayerWin(player, 1, numOfPlayers, deck); }, 2000);
