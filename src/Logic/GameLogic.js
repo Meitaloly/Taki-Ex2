@@ -273,7 +273,7 @@ class GameLogic {
                 }
                 else {
                     if (plus2 > 0) {
-                        alert(`you have to take ${plus2}cards from deck!"`);
+                        alert(`you have to take ${plus2} cards from deck!"`);
                     }
                     else {
                         wrongSound.play();
