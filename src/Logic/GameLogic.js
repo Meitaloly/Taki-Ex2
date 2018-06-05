@@ -1,6 +1,6 @@
 const cardColors = { 0: "blue", 1: "red", 2: "green", 3: "yellow" }
 const numOfColors = 4;
-const numOfCardsForEachPlayer =8;
+const numOfCardsForEachPlayer = 8;
 let setStateInBoardCB;
 let takenCardsCounter = 0;
 let turnIndex = 2;
@@ -16,8 +16,9 @@ let gameMove = [];
 let arrIndex = 0;
 let avg = 0;
 let avgPerGame = 0;
-let is3Games= false;
-
+let is3Games = false;
+let gameNum = 1;
+let tournamentIsDone = false;
 
 //statistics
 let turnTime = [];
@@ -53,7 +54,6 @@ class GameLogic {
         plus2 = 0;
         gameStarted = false;
         transformArrow = 0;
-        //avgTurnTimePerGame = [];
         fullTime = "";
         startTime = "00:01";
         endTime;
@@ -62,6 +62,9 @@ class GameLogic {
         stopTimer = false;
         clearInterval(timeInterval);
         this.setSounds();
+        gameNum = 1;
+        is3Games = false;
+
     }
 
     static setSounds() {
@@ -122,7 +125,7 @@ class GameLogic {
         takenCardsCounter = 0;
     }
 
-    static createCard(color, value, counterId, specialCard) {
+    static createCard(color, value, counterId, specialCard, points) {
         return {
             color: color,
             value: value,
@@ -131,6 +134,7 @@ class GameLogic {
             specialCard: specialCard,
             cardId: counterId,
             isOpenCard: false,
+            points: points,
             imgSourceFront: this.getCardSource(value, color),
             imgSourceBack: "cards/card_back.png"
         }
@@ -156,28 +160,28 @@ class GameLogic {
             for (let j = 1; j < 10; j++) {
                 for (let k = 0; k < 2; k++) {
                     if (j !== 2) {
-                        deck.push(this.createCard(cardColors[i], j, cardIdCounter, false));
+                        deck.push(this.createCard(cardColors[i], j, cardIdCounter, false, j));
                         cardIdCounter++;
                     }
                     else {
-                        deck.push(this.createCard(cardColors[i], j + 'plus', cardIdCounter, true));
+                        deck.push(this.createCard(cardColors[i], j + 'plus', cardIdCounter, true, 10));
                         cardIdCounter++;
                     }
                 }
             }
             for (let j = 0; j < 2; j++) {
-                deck.push(this.createCard(cardColors[i], "taki", cardIdCounter, true));
+                deck.push(this.createCard(cardColors[i], "taki", cardIdCounter, true, 15));
                 cardIdCounter++;
-                deck.push(this.createCard(cardColors[i], "stop", cardIdCounter, true));
+                deck.push(this.createCard(cardColors[i], "stop", cardIdCounter, true, 10));
                 cardIdCounter++;
-                deck.push(this.createCard(cardColors[i], "plus", cardIdCounter, true));
+                deck.push(this.createCard(cardColors[i], "plus", cardIdCounter, true, 10));
                 cardIdCounter++;
             }
             if (i < 2) {
-                deck.push(this.createCard(null, "taki_colorful", cardIdCounter, true));
+                deck.push(this.createCard(null, "taki_colorful", cardIdCounter, true, 15));
                 cardIdCounter++;
             }
-            deck.push(this.createCard(null, "change_colorful", cardIdCounter, true));
+            deck.push(this.createCard(null, "change_colorful", cardIdCounter, true, 15));
             cardIdCounter++;
         }
         console.log(deck);
@@ -212,6 +216,20 @@ class GameLogic {
         return cards;
     }
 
+    static startNewGameInTournament(deck) {
+        deck = [];
+        deck = this.createDeck();
+
+        for (let key in players) {
+            players[key].cards = this.shareCards(deck);
+        }
+        setStateInBoardCB('players', players, false);
+
+        cardOnTop = this.drawOpeningCard(deck);
+        setStateInBoardCB('cardOnTop', cardOnTop);
+
+    }
+
     static addCardToPlayersArr(arrToAddTheCard, deck) {
         console.log(arrToAddTheCard);
         let cardIndex;
@@ -229,7 +247,7 @@ class GameLogic {
         }
         this.resizeCards();
         if (gameStarted) {
-            takingCard.play();
+            //takingCard.play();
             console.log("player 1: " + players[0].cards);
             console.log("player 2: " + players[1].cards);
             if (plus2 > 0) {
@@ -254,6 +272,10 @@ class GameLogic {
                 }
             }
         }
+    }
+
+    static setTournament() {
+        is3Games = true;
     }
 
     static checkCard(playerIndex, card, numOfPlayers, deck) {
@@ -375,7 +397,7 @@ class GameLogic {
         else if (cardOnTop.value === "stop") {
             if (player.cards.length === 0) {
                 //alert("stop the game");
-                this.stopTheGame();
+                this.stopTheGame(deck);
             }
             else {
                 this.changeTurn(this.checkTopCard(), numOfPlayers, deck);
@@ -555,22 +577,88 @@ class GameLogic {
 
     static checkPlayerWin(player, num, numOfPlayers, deck) {
         if (player.cards.length === 0) {
-            turnIndex === players[numOfPlayers-1].index? winnerSound.play() : loserSound.play();
-            setTimeout(() => { this.stopTheGame() }, 1000);
-            
+            turnIndex === players[numOfPlayers - 1].index ? winnerSound.play() : loserSound.play();
+            setTimeout(() => { this.stopTheGame(deck) }, 1000);
+
         }
         else {
             this.changeTurn(num, numOfPlayers, deck);
         }
     }
 
-    static stopTheGame() {
+    static stopTheGame(deck) {
         avgTurnTimePerGame.push(avg);
         this.findAvgOfTurnTime(avgTurnTimePerGame, true);
         endTime = fullTime;
         stopTimer = true;
         gameOver = true;
-        setStateInBoardCB('endGameControllerIsHidden', false);
+
+        if (!is3Games) {
+            setStateInBoardCB('endGameControllerIsHidden', false);
+        }
+        else {
+            if (gameNum === 3) {
+                if (players[0].score > players[1].score)
+                {
+                    setStateInBoardCB("winnerIndex", 0)
+                }
+                else
+                {
+                    setStateInBoardCB("winnerIndex", 1)
+                }
+                tournamentIsDone = true;
+                setStateInBoardCB("tournamentIsDone",tournamentIsDone);
+                this.newGame();
+
+                    
+            }
+            else {
+                let winnerScore = 0;
+                let winnerIndex;
+
+                for (let j = 0; j < 2; j++) {
+                    if (players[j].cards.length > 0) {
+                        for (let i = 0; i < players[j].cards.length; i++) {
+                            winnerScore += players[j].cards[i].points;
+                        }
+                    }
+                    else {
+                        winnerIndex = j;
+                    }
+                }
+
+                players[winnerIndex].score += winnerScore;
+                gameNum++;
+                setStateInBoardCB("gameNum", gameNum);
+                setStateInBoardCB("players", players, false);
+                avg = 0;
+                setStateInBoardCB("avgTimeForTurn", avg);
+                gameStarted = false;
+                this.startNewGameInTournament(deck);
+                gameStarted = true;
+                setStateInBoardCB("gameStarted", gameStarted);
+                turnIndex = 2;
+                setStateInBoardCB("turnIndex", turnIndex);
+                takenCardsCounter = 0;
+                setStateInBoardCB("takenCardsCounter", takenCardsCounter);
+                gameOver = false;
+                numOfTurns = 0;
+                setStateInBoardCB("numOfTurns", numOfTurns);
+                turnTime = [];
+                plus2 = 0;
+                transformArrow = 0;
+                setStateInBoardCB("transformArrow", transformArrow);
+                fullTime = "";
+                startTime = "00:01";
+                endTime;
+                sec = 0;
+                min = 0;
+                stopTimer = false;
+                clearInterval(timeInterval);
+                this.setAvgPerGame();
+                GameLogic.gameTimer();
+            }
+        }
     }
 
     static checkTopCard() {

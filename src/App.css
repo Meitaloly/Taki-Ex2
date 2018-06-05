@@ -1,4 +1,4 @@
-.endGameController, .colorWindowContainer {
+.endGameController, .colorWindowContainer, {
   z-index: 9999;
   bottom:0;
   left:0;
@@ -9,6 +9,19 @@
   /* height: 100%;
   position: absolute;
   padding-left: 100px; */
+}
+
+
+.tournamentWinner{
+  z-index: 9999;
+  bottom:0;
+  left:0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  color:white;
+  background: green;
+  text-align: center;
 }
 
 .btn-group .button {
@@ -145,13 +158,27 @@ body{
   position: relative;
 }
 
-/* .playerCardsContainer>div>.card{
-  margin-left: -50px;
-} */
+.play , .Tournament{
+  width: 150px;
+  height: 70px;
+  font: bold 16px/30px Georgia, serif;
+}
 
 .player2>.playerCardsContainer>div>.card:hover{
   transform: translateY(-50px);  
 }
+/* 
+.numberOfGame, .player1Score, .player2Score{
+  width: 30%;
+  float:letf;
+} */
+
+
+.TournamentData{
+  width: 100%;
+  /* position: flex;  */
+}
+
 /* ------------------------------------------------------------------------ */
 
 @media all and (max-height: 610px) , all and (max-width: 600px){

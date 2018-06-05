@@ -7,12 +7,17 @@ class StartMenu extends Component {
 
 
     render() {
-        const {playSingleGame, playTournament} = this.props;
+        const { playSingleGame, playTournament } = this.props;
+        let {toHidde} = this.props;
 
         return (
-            <div className="StartMenu">
-                <button className ="play" onClick = {()=>playSingleGame()} />   
-                <button className ="Tournament" onClick = {()=>playTournament()} />
+            <div className="StartMenu" >
+                <button className="play" onClick={() => playSingleGame()}>
+                    PLAY SINGLE GAME
+                </button>
+                <button className="Tournament" onClick={() => playTournament()}>
+                    PLAY TOURNAMENT
+                </button>
             </div>
         );
     }
