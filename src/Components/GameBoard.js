@@ -3,6 +3,7 @@ import GameLogic from '../Logic/GameLogic';
 import PlayerComponent from './PlayerComponent';
 import TableDeck from './TableDeck';
 import Statistics from './Statistics';
+import StartMenu from './StartMenu';
 
 const numberOfPlayer = 2;
 
@@ -88,7 +89,6 @@ class GameBoard extends Component {
     checkCard(card, playerIndex) {
         console.log(this.state.turnIndex);
         const { players, deck } = this.state;
-        //GameLogic.checkCard(players[playerIndex - 1], card, numberOfPlayer, deck);
         GameLogic.checkCard(playerIndex, card, numberOfPlayer, deck);
 
         this.setState(() => {
