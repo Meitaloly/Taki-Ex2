@@ -212,7 +212,6 @@ class GameLogic {
     }
 
     static addCardToPlayersArr(arrToAddTheCard, deck) {
-        takingCard.play();
         console.log(arrToAddTheCard);
         let cardIndex;
         do {
@@ -229,6 +228,7 @@ class GameLogic {
         }
         this.resizeCards();
         if (gameStarted) {
+            takingCard.play();
             console.log("player 1: " + players[0].cards);
             console.log("player 2: " + players[1].cards);
             if (plus2 > 0) {
