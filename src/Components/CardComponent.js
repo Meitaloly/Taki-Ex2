@@ -11,7 +11,6 @@ class CardComponent extends Component {
         let {cardMarginLeft } = this.props;       
         return (
             <div style={!isInDeck?{ marginLeft:cardMarginLeft}:null}>
-                {/* <img src={card.imgSourceFront} onClick={() => checkCard(card, playerIndex)} /> */}
                 {isOpenCard ? <img className="card" alt="card" src={card.imgSourceFront} onClick={isInDeck ? null : () => checkCard(card, playerIndex)} />
                     : <img src={card.imgSourceBack} alt="card" className="card" onClick={isInDeck ? () => checkStatusOnTableDeckClicked() : null} />}
 

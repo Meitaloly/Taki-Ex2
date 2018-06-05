@@ -16,6 +16,7 @@ let gameMove = [];
 let arrIndex = 0;
 let avg = 0;
 let avgPerGame = 0;
+let is3Games= false;
 
 
 //statistics
