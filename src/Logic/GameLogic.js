@@ -1,6 +1,6 @@
 const cardColors = { 0: "blue", 1: "red", 2: "green", 3: "yellow" }
 const numOfColors = 4;
-const numOfCardsForEachPlayer = 8;
+const numOfCardsForEachPlayer = 1;
 let setStateInBoardCB;
 let takenCardsCounter = 0;
 let turnIndex = 2;
@@ -217,17 +217,23 @@ class GameLogic {
     }
 
     static startNewGameInTournament(deck) {
-        deck = [];
-        deck = this.createDeck();
+        for (let key in deck) {
+            if (deck[key].value === "taki_colorful" || deck[key].value === "change_colorful") {
+                deck[key].color = null;
+                deck[key].imgSourceFront = this.getCardSource(deck[key].value, deck[key].color);
+            }
+            deck[key].played = false;
+            deck[key].taken = false;
+        }
 
         for (let key in players) {
             players[key].cards = this.shareCards(deck);
+            players[key].oneCardLeftCounter = 0;
         }
         setStateInBoardCB('players', players, false);
 
         cardOnTop = this.drawOpeningCard(deck);
         setStateInBoardCB('cardOnTop', cardOnTop);
-
     }
 
     static addCardToPlayersArr(arrToAddTheCard, deck) {
@@ -406,7 +412,7 @@ class GameLogic {
         else if (cardOnTop.value === "taki" || cardOnTop.value === "taki_colorful") {
             if (turnIndex !== numOfPlayers) { // rival action
                 this.rivalActionForTakiCard(player, numOfPlayers, deck);
-                this.checkPlayerWin(player, this.checkTopCard(), numOfPlayers, deck);
+                //this.checkPlayerWin(player, this.checkTopCard(), numOfPlayers, deck);
             }
             else {
                 if (!openTaki) {
@@ -439,14 +445,6 @@ class GameLogic {
         else {
             this.checkPlayerWin(player, 1, numOfPlayers, deck);
         }
-        // if (!openTaki) {
-        //     openTaki = true;
-        //     this.checkPlayerWin(player, numOfPlayers, numOfPlayers, deck);
-        //     //this.rivalPlay(deck, numOfPlayers);
-        // }
-        // else {
-        //     this.rivalPlay(deck, numOfPlayers);
-        // }
     }
 
 
@@ -576,10 +574,12 @@ class GameLogic {
     }
 
     static checkPlayerWin(player, num, numOfPlayers, deck) {
-        if (player.cards.length === 0) {
-            turnIndex === players[numOfPlayers - 1].index ? winnerSound.play() : loserSound.play();
-            setTimeout(() => { this.stopTheGame(deck) }, 1000);
 
+        if (player.cards.length === 0) {
+            if (!is3Games) {
+                turnIndex === players[numOfPlayers - 1].index ? winnerSound.play() : loserSound.play();
+            }
+            setTimeout(() => { this.stopTheGame(deck) }, 1000);
         }
         else {
             this.changeTurn(num, numOfPlayers, deck);
@@ -597,37 +597,39 @@ class GameLogic {
             setStateInBoardCB('endGameControllerIsHidden', false);
         }
         else {
-            if (gameNum === 3) {
-                if (players[0].score > players[1].score)
-                {
-                    setStateInBoardCB("winnerIndex", 0)
-                }
-                else
-                {
-                    setStateInBoardCB("winnerIndex", 1)
-                }
-                tournamentIsDone = true;
-                setStateInBoardCB("tournamentIsDone",tournamentIsDone);
-                this.newGame();
+            let winnerScore = 0;
+            let winnerIndex;
 
-                    
+            for (let j = 0; j < 2; j++) {
+                if (players[j].cards.length > 0) {
+                    for (let i = 0; i < players[j].cards.length; i++) {
+                        winnerScore += players[j].cards[i].points;
+                    }
+                }
+                else {
+                    winnerIndex = j;
+                }
+            }
+            players[winnerIndex].score += winnerScore;
+
+            if (gameNum === 3) {
+                if (players[0].score > players[1].score) {
+                    setStateInBoardCB("winnerIndex", 0)
+                    loserSound.play();
+                }
+                else if (players[0].score < players[1].score) {
+                    setStateInBoardCB("winnerIndex", 1)
+                    winnerSound.play();
+                }
+                else {
+                    setStateInBoardCB("winnerIndex", "Tie!")
+                }
+
+                tournamentIsDone = true;
+                setStateInBoardCB("tournamentIsDone", tournamentIsDone);
+                this.newGame();
             }
             else {
-                let winnerScore = 0;
-                let winnerIndex;
-
-                for (let j = 0; j < 2; j++) {
-                    if (players[j].cards.length > 0) {
-                        for (let i = 0; i < players[j].cards.length; i++) {
-                            winnerScore += players[j].cards[i].points;
-                        }
-                    }
-                    else {
-                        winnerIndex = j;
-                    }
-                }
-
-                players[winnerIndex].score += winnerScore;
                 gameNum++;
                 setStateInBoardCB("gameNum", gameNum);
                 setStateInBoardCB("players", players, false);
@@ -959,7 +961,7 @@ class GameLogic {
 
     static resizeCards() {
         let cardWidth = 120;
-        let cardSpace = 60;
+        let cardSpace = 70;
         let resizeArr = [0, 0];
         let cardMarginLeft = [0, 0];
 

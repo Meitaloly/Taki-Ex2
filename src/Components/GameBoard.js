@@ -50,18 +50,18 @@ class GameBoard extends Component {
 
     playSingleGame() {
         this.newGame();
-        this.setNewStateCb("StartMenuButoonsClicked", true,false);
-        this.setNewStateCb("is3Game", false,false);
-        this.setNewStateCb("tournamentIsDone", false,false);
+        this.setNewStateCb("StartMenuButoonsClicked", true, false);
+        this.setNewStateCb("is3Game", false, false);
+        this.setNewStateCb("tournamentIsDone", false, false);
     }
 
     playTournament() {
         this.newGame();
-        this.setNewStateCb("StartMenuButoonsClicked", true,false);
-        this.setNewStateCb("is3Game", true,false);
+        this.setNewStateCb("StartMenuButoonsClicked", true, false);
+        this.setNewStateCb("is3Game", true, false);
         GameLogic.setTournament();
-        this.setNewStateCb("gameNum", 1,false);
-        this.setNewStateCb("tournamentIsDone", false,false);
+        this.setNewStateCb("gameNum", 1, false);
+        this.setNewStateCb("tournamentIsDone", false, false);
 
     }
 
@@ -172,10 +172,12 @@ class GameBoard extends Component {
                         </div>
 
                         <div className="tournamentWinner" hidden={!tournamentIsDone}>
-                            <div>The Winner Is: player {winnerIndex+1}</div>
-                            <TournamentData gameNum={gameNum} players={players} />
-                            <Statistics numOfTurns={numOfTurns} timer={timer} avgTimeForTurn={avgTimeForTurn} players={players} avgTimeForTurnPerGame={avgTimeForTurnPerGame} numOfCardsInDeck={deck.length - takenCardsCounter} />
-                            <StartMenu playSingleGame={this.playSingleGame} playTournament={this.playTournament} />
+                            <div className="data">
+                                <div className="Winner">The Winner Is: player {winnerIndex + 1}</div>
+                                <TournamentData gameNum={gameNum} players={players} />
+                                <Statistics numOfTurns={numOfTurns} timer={timer} avgTimeForTurn={avgTimeForTurn} players={players} avgTimeForTurnPerGame={avgTimeForTurnPerGame} numOfCardsInDeck={deck.length - takenCardsCounter} />
+                                <StartMenu playSingleGame={this.playSingleGame} playTournament={this.playTournament} />
+                            </div>
                         </div>
 
                         <div className="endGameController" hidden={(endGameControllerIsHidden && !GameLogic.isGameOver()) || is3Game}>
