@@ -1,6 +1,6 @@
 const cardColors = { 0: "blue", 1: "red", 2: "green", 3: "yellow" }
 const numOfColors = 4;
-const numOfCardsForEachPlayer = 1;
+const numOfCardsForEachPlayer = 8;
 let setStateInBoardCB;
 let takenCardsCounter = 0;
 let turnIndex = 2;
@@ -254,8 +254,8 @@ class GameLogic {
         this.resizeCards();
         if (gameStarted) {
             //takingCard.play();
-            console.log("player 1: " + players[0].cards);
-            console.log("player 2: " + players[1].cards);
+            //console.log("player 1: " + players[0].cards);
+            //console.log("player 2: " + players[1].cards);
             if (plus2 > 0) {
                 plus2--;
             }
@@ -302,7 +302,7 @@ class GameLogic {
                 }
                 else {
                     if (plus2 > 0) {
-                        alert(`you have to take ${plus2} cards from deck!"`);
+                        alert(`you have to take ${plus2} cards from deck!`);
                     }
                     else {
                         wrongSound.play();
@@ -347,7 +347,7 @@ class GameLogic {
             player.oneCardLeftCounter++;
         }
         setStateInBoardCB('players', players, false);
-        this.printPlayersCards();
+        //this.printPlayersCards();
     }
 
     static printPlayersCards() {
@@ -382,13 +382,6 @@ class GameLogic {
         deck[cardOnTop.cardId].played = true;
         cardOnTop = cardToPutOnTop;
         setStateInBoardCB('cardOnTop', cardOnTop);
-        // if (turnIndex === players[0].index) {
-        //     setTimeout(() => { setStateInBoardCB('cardOnTop', cardOnTop) }, 2000);
-        // }
-        // else {
-        //     setStateInBoardCB('cardOnTop', cardOnTop);
-        // }
-        console.log("card on top is : " + cardOnTop.value + " " + cardOnTop.color);
     }
 
     static isSpecialCard(player, numOfPlayers, deck, cardOnTopColor) {
@@ -525,7 +518,7 @@ class GameLogic {
 
             }
             //this.rotateArrow();
-            console.log("before chnging turn: " + turnIndex);
+            //console.log("before chnging turn: " + turnIndex);
             let saveTurnIndex = turnIndex;
             turnIndex = ((turnIndex - 1) + number) % numOfPlayers + 1;
             setStateInBoardCB('turnIndex', turnIndex);
@@ -533,11 +526,11 @@ class GameLogic {
             if (saveTurnIndex !== turnIndex) {
                 this.rotateArrow();
             }
-            console.log("after chnging turn: " + turnIndex);
+            //console.log("after chnging turn: " + turnIndex);
             startTime = fullTime;
 
             if (turnIndex !== numOfPlayers) {
-                console.log("rivals turn");
+                //console.log("rivals turn");
                 //this.rivalPlay(deck, numOfPlayers)
                 setTimeout(() => { this.rivalPlay(deck, numOfPlayers) }, 2000);
             }
@@ -630,37 +623,41 @@ class GameLogic {
                 this.newGame();
             }
             else {
-                gameNum++;
-                setStateInBoardCB("gameNum", gameNum);
-                setStateInBoardCB("players", players, false);
-                avg = 0;
-                setStateInBoardCB("avgTimeForTurn", avg);
-                gameStarted = false;
-                this.startNewGameInTournament(deck);
-                gameStarted = true;
-                setStateInBoardCB("gameStarted", gameStarted);
-                turnIndex = 2;
-                setStateInBoardCB("turnIndex", turnIndex);
-                takenCardsCounter = 0;
-                setStateInBoardCB("takenCardsCounter", takenCardsCounter);
-                gameOver = false;
-                numOfTurns = 0;
-                setStateInBoardCB("numOfTurns", numOfTurns);
-                turnTime = [];
-                plus2 = 0;
-                transformArrow = 0;
-                setStateInBoardCB("transformArrow", transformArrow);
-                fullTime = "";
-                startTime = "00:01";
-                endTime;
-                sec = 0;
-                min = 0;
-                stopTimer = false;
-                clearInterval(timeInterval);
-                this.setAvgPerGame();
-                GameLogic.gameTimer();
+                this.setNewGameInTournament(deck);
             }
         }
+    }
+
+    static setNewGameInTournament(deck) {
+        gameNum++;
+        setStateInBoardCB("gameNum", gameNum);
+        setStateInBoardCB("players", players, false);
+        avg = 0;
+        setStateInBoardCB("avgTimeForTurn", avg);
+        gameStarted = false;
+        this.startNewGameInTournament(deck);
+        gameStarted = true;
+        setStateInBoardCB("gameStarted", gameStarted);
+        turnIndex = 2;
+        setStateInBoardCB("turnIndex", turnIndex);
+        takenCardsCounter = 0;
+        setStateInBoardCB("takenCardsCounter", takenCardsCounter);
+        gameOver = false;
+        numOfTurns = 0;
+        setStateInBoardCB("numOfTurns", numOfTurns);
+        turnTime = [];
+        plus2 = 0;
+        transformArrow = 0;
+        setStateInBoardCB("transformArrow", transformArrow);
+        fullTime = "";
+        startTime = "00:01";
+        endTime;
+        sec = 0;
+        min = 0;
+        stopTimer = false;
+        clearInterval(timeInterval);
+        this.setAvgPerGame();
+        GameLogic.gameTimer();
     }
 
     static checkTopCard() {
@@ -680,7 +677,7 @@ class GameLogic {
         this.addTakenCardCounter(deck);
         cardOnTop = deck[CardIndex];
         gameStarted = true;
-        this.printPlayersCards();
+        //this.printPlayersCards();
         //setStateInBoardCB('cardOnTop',cardOnTop);
         return deck[CardIndex];
     }
@@ -956,7 +953,7 @@ class GameLogic {
         }
         transformArrow = newTransformAroow;
         setStateInBoardCB('transformArrow', newTransformAroow, false);
-        console.log("rotating");
+        //console.log("rotating");
     }
 
     static resizeCards() {

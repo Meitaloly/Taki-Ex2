@@ -113,7 +113,7 @@ class GameBoard extends Component {
     }
 
     checkCard(card, playerIndex) {
-        console.log(this.state.turnIndex);
+        //console.log(this.state.turnIndex);
         const { players, deck } = this.state;
         GameLogic.checkCard(playerIndex, card, numberOfPlayer, deck);
 
@@ -144,7 +144,7 @@ class GameBoard extends Component {
             //players.length > 0 && (
             <div className="boardContainer">
                 <div hidden={this.state.StartMenuButoonsClicked}>
-                    <StartMenu playSingleGame={this.playSingleGame} playTournament={this.playTournament} />
+                    <StartMenu playSingleGame={this.playSingleGame} playTournament={this.playTournament} toHide ={is3Game} />
                 </div>
                 {players.length > 0 ?
                     <div>
@@ -176,13 +176,13 @@ class GameBoard extends Component {
                                 <div className="Winner">The Winner Is: player {winnerIndex + 1}</div>
                                 <TournamentData gameNum={gameNum} players={players} />
                                 <Statistics numOfTurns={numOfTurns} timer={timer} avgTimeForTurn={avgTimeForTurn} players={players} avgTimeForTurnPerGame={avgTimeForTurnPerGame} numOfCardsInDeck={deck.length - takenCardsCounter} />
-                                <StartMenu playSingleGame={this.playSingleGame} playTournament={this.playTournament} />
+                                <StartMenu playSingleGame={this.playSingleGame} playTournament={this.playTournament} toHide ={is3Game}/>
                             </div>
                         </div>
 
                         <div className="endGameController" hidden={(endGameControllerIsHidden && !GameLogic.isGameOver()) || is3Game}>
                             <div className="replay btn-group">
-                                <button className="button" onClick={this.previousMove}>◄Previous</button>
+                                <button className="button" onClick={this.previousMove}>◄Prev</button>
                                 <button className="button" onClick={() => { players.length = 0; this.setNewStateCb("StartMenuButoonsClicked", false) }}>Back To Menu</button>
                                 <button className="button" onClick={this.nextMove}>Next►</button>
                             </div>

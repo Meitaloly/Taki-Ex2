@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import '../App.css';
 
 class StartMenu extends Component {
     constructor(props) {
@@ -8,12 +9,12 @@ class StartMenu extends Component {
 
     render() {
         const { playSingleGame, playTournament } = this.props;
-        let { toHidde } = this.props;
+        let { toHide } = this.props;
 
         return (
             <div className="StartMenu" >
-                <div className="logoContainer">
-                    <img className="takiLogo" src="./images/takiLogo.jpg" />
+                <div className="logoContainer" hidden={toHide}>
+                    <img className="takiLogo" src="./images/takiLogo.jpg"/>
                 </div>
                 <div className="startMenuButtons">
                     <button className="play" onClick={() => playSingleGame()}>
