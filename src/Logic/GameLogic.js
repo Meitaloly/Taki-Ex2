@@ -184,7 +184,7 @@ class GameLogic {
             deck.push(this.createCard(null, "change_colorful", cardIdCounter, true, 15));
             cardIdCounter++;
         }
-        console.log(deck);
+        //console.log(deck);
         return deck;
     }
 
@@ -237,7 +237,7 @@ class GameLogic {
     }
 
     static addCardToPlayersArr(arrToAddTheCard, deck) {
-        console.log(arrToAddTheCard);
+        //console.log(arrToAddTheCard);
         let cardIndex;
         do {
             cardIndex = Math.floor(Math.random() * deck.length);
